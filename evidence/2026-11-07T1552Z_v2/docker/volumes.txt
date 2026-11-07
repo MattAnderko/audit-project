@@ -1,0 +1,2 @@
+DRIVER    VOLUME NAME
+local     booking-v2_dbdata

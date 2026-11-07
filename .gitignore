@@ -1,0 +1,9 @@
+# Titkok
+.env
+*.env
+secrets/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+~$*

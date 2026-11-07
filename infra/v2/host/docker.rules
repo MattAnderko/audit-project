@@ -1,0 +1,14 @@
+## CIS Docker Benchmark 1.1.3 – 1.1.18: a Docker daemon és fájljainak auditálása (M-01)
+-w /usr/bin/dockerd -k docker
+-a exit,always -F path=/run/containerd -F perm=war -k docker
+-w /var/lib/docker -k docker
+-w /etc/docker -k docker
+-w /lib/systemd/system/docker.service -k docker
+-w /run/containerd/containerd.sock -k docker
+-w /lib/systemd/system/docker.socket -k docker
+-w /etc/default/docker -k docker
+-w /etc/docker/daemon.json -k docker
+-w /etc/containerd/config.toml -k docker
+-w /usr/bin/containerd -k docker
+-w /usr/bin/containerd-shim-runc-v2 -k docker
+-w /usr/bin/runc -k docker

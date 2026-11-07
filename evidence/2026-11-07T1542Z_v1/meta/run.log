@@ -1,0 +1,29 @@
+[2026-11-07T15:42:10Z] Mérés indul: RUN_ID=2026-11-07T1542Z_v1, auditor=root
+[2026-11-07T15:42:10Z] RUN: bash -c hostname; uname -a; cat /etc/os-release > meta/host.txt
+[2026-11-07T15:42:10Z] RUN: docker version > meta/docker-version.txt
+[2026-11-07T15:42:10Z] RUN: docker info > meta/docker-info.txt
+[2026-11-07T15:42:10Z] RUN: trivy --version > meta/trivy-version.txt
+[2026-11-07T15:42:10Z] RUN: git -C /opt/docker-bench-security rev-parse HEAD > meta/docker-bench-commit.txt
+[2026-11-07T15:42:10Z] INFO: /etc/docker/daemon.json nem létezik
+[2026-11-07T15:42:10Z] RUN: auditctl -l > config/auditctl-rules.txt
+[2026-11-07T15:42:10Z]   WARN: kilépési kód 255 (auditctl -l)
+[2026-11-07T15:42:10Z] RUN: systemctl cat docker.service docker.socket > config/docker-service.txt
+[2026-11-07T15:42:10Z] RUN: bash -c ls -la /etc/docker /var/run/docker.sock /lib/systemd/system/docker.* /usr/lib/systemd/system/docker.* 2>&1 > config/docker-files-perms.txt
+[2026-11-07T15:42:10Z] Compose / Dockerfile másolatok: /mnt/c/Users/anderkomate/Projects/audit-project/infra/v1
+[2026-11-07T15:42:10Z] RUN: docker ps -a --no-trunc > docker/ps.txt
+[2026-11-07T15:42:11Z] RUN: docker images --digests --no-trunc > docker/images.txt
+[2026-11-07T15:42:11Z] RUN: docker network ls > docker/networks.txt
+[2026-11-07T15:42:11Z] RUN: docker volume ls > docker/volumes.txt
+[2026-11-07T15:42:11Z] RUN: docker inspect 11fb62f382f4 2ff83d70c07d 29d52e517a7c > docker/inspect-containers.json
+[2026-11-07T15:42:11Z] Titkok maszkolva: docker/inspect-containers.json
+[2026-11-07T15:42:11Z] RUN: docker network inspect b64fd1bc161e f47fd47cef08 8fd2464bda5b c85e70643fa0 > docker/inspect-networks.json
+[2026-11-07T15:42:11Z] RUN: docker-bench-security
+[2026-11-07T15:42:35Z] RUN: trivy image --scanners vuln --format json booking-app:v1 > trivy/image_booking-app_v1.json
+[2026-11-07T15:42:54Z] RUN: trivy image --scanners vuln --severity HIGH,CRITICAL booking-app:v1 > trivy/image_booking-app_v1.txt
+[2026-11-07T15:42:55Z] RUN: trivy image --scanners vuln --format json nginx:latest > trivy/image_nginx_latest.json
+[2026-11-07T15:43:31Z] RUN: trivy image --scanners vuln --severity HIGH,CRITICAL nginx:latest > trivy/image_nginx_latest.txt
+[2026-11-07T15:43:31Z] RUN: trivy image --scanners vuln --format json postgres:latest > trivy/image_postgres_latest.json
+[2026-11-07T15:43:36Z] RUN: trivy image --scanners vuln --severity HIGH,CRITICAL postgres:latest > trivy/image_postgres_latest.txt
+[2026-11-07T15:43:37Z] RUN: trivy config --format json /mnt/c/Users/anderkomate/Projects/audit-project/evidence/2026-11-07T1542Z_v1/config/compose > trivy/config.json
+[2026-11-07T15:43:38Z] RUN: trivy config /mnt/c/Users/anderkomate/Projects/audit-project/evidence/2026-11-07T1542Z_v1/config/compose > trivy/config.txt
+[2026-11-07T15:43:39Z] Mérés vége, hash-ek készítése

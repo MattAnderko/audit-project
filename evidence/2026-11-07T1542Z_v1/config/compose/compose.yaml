@@ -1,0 +1,43 @@
+# v1 – "naiv" kiinduló telepítés: tipikus tutorial-szintű, alapértelmezett beállítások.
+# A jelszavak oktatási célú, fiktív tesztértékek.
+name: booking
+
+services:
+  proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    restart: always
+
+  app:
+    build:
+      context: ../../app
+      dockerfile: ../infra/v1/Dockerfile
+    image: booking-app:v1
+    environment:
+      DATABASE_URL: postgresql://booking:booking123@db:5432/booking
+      ADMIN_PASSWORD: admin123
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: booking
+      POSTGRES_PASSWORD: booking123
+      POSTGRES_DB: booking
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql
+    restart: always
+
+volumes:
+  dbdata:
