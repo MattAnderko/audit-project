@@ -16,6 +16,8 @@ fi
 # 2. Host / daemon hardening (M-01, M-10)
 install -D -m 0644 -o root -g root "$REPO_ROOT/infra/v2/host/daemon.json" /etc/docker/daemon.json
 install -D -m 0640 -o root -g root "$REPO_ROOT/infra/v2/host/docker.rules" /etc/audit/rules.d/docker.rules
+# Újratelepítéskor a már betöltött Docker-szabályok ("Rule exists") törlése, csak a docker kulcsúak
+auditctl -D -k docker >/dev/null 2>&1 || true
 if ! augenrules --load; then
   echo "FIGYELEM: az auditd szabályok nem tölthetők be (pl. a kernel audit támogatása hiányzik, vagy egy szabály nem létező útvonalra mutat)." >&2
 fi
@@ -24,6 +26,16 @@ systemctl restart docker
 
 # 3. Az alkalmazás telepítése a célkönyvtárba
 mkdir -p "$TARGET"
+# A titkok tartós helye: újratelepítéskor nem törlődik. Ha a titok újragenerálódna, a meglévő
+# adatbázis-volume a régi jelszót őrizné (a PostgreSQL csak az első inicializáláskor állítja be).
+SECRETS_STORE="$TARGET/secrets"
+mkdir -p "$SECRETS_STORE"; chmod 0700 "$SECRETS_STORE"
+# Korábbi elrendezés átvétele: a régebbi telepítések az infra/v2/secrets alatt tárolták a titkokat
+if [[ -d "$TARGET/infra/v2/secrets" ]]; then
+  for f in "$TARGET/infra/v2/secrets/"*.txt; do
+    [[ -s "$f" && ! -e "$SECRETS_STORE/$(basename "$f")" ]] && install -m 0600 "$f" "$SECRETS_STORE/"
+  done
+fi
 rm -rf "$TARGET/app" "$TARGET/infra"
 mkdir -p "$TARGET/infra"
 cp -r "$REPO_ROOT/app" "$TARGET/app"
@@ -34,12 +46,12 @@ rm -rf "$TARGET/infra/v2/host"
 SECRETS="$TARGET/infra/v2/secrets"
 mkdir -p "$SECRETS"; chmod 0700 "$SECRETS"
 for s in db_password admin_password; do
-  if [[ ! -s "$SECRETS/$s.txt" ]]; then
-    openssl rand -hex 24 > "$SECRETS/$s.txt"
+  if [[ ! -s "$SECRETS_STORE/$s.txt" ]]; then
+    (umask 077; openssl rand -hex 24 > "$SECRETS_STORE/$s.txt")
   fi
   # A fájl a userns-remap miatt a konténer (leképezett) felhasználója számára olvasható kell legyen;
   # a hoston a 0700-as szülőkönyvtár védi.
-  chmod 0644 "$SECRETS/$s.txt"
+  install -m 0644 "$SECRETS_STORE/$s.txt" "$SECRETS/$s.txt"
 done
 
 # 5. Build és indítás

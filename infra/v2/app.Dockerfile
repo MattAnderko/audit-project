@@ -8,8 +8,11 @@ RUN addgroup -S -g 10001 app && adduser -S -D -H -u 10001 -G app app
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt \
+ # M-04: a pip csak a buildhez kell; a futtatási image-ből eltávolítjuk a beépített
+ # (vendorolt) csomagjaival együtt (urllib3, msgpack, setuptools sérülékenységek)
+ && python -m pip uninstall -y pip \
  # CIS 4.8: setuid/setgid bitek eltávolítása
- && find / -xdev -perm /6000 -type f -exec chmod a-s {} + 2>/dev/null || true
+ && (find / -xdev -perm /6000 -type f -exec chmod a-s {} + 2>/dev/null || true)
 COPY app.py .
 
 USER 10001:10001

@@ -50,15 +50,15 @@ Az audit elkészült (2026-11-08):
 - Leadandó dokumentáció: [docs/jelentes.docx](docs/jelentes.docx) (14 oldal; forrás: [docs/jelentes.md](docs/jelentes.md))
 - Prezentáció: [docs/prezentacio.pptx](docs/prezentacio.pptx) (10 dia, előadói jegyzetekkel)
 - Interaktív áttekintés: [docs/attekintes.html](docs/attekintes.html) (böngészőben megnyitható)
-- Bizonyítékok: `evidence/2026-11-08T1402Z_v1` (v1), `evidence/2026-11-08T1406Z_v2` (v2), `evidence/2026-11-08T1409Z_v2-functional` (v2 funkcionális teszt), `evidence/2026-11-08T1424Z_v2-dash` (a docker-bench dash-hibájának bizonyítéka)
-- Eredmény: docker-bench score 5 → 61, WARN 29 → 4, magas + kritikus CVE 454 → 41
+- Bizonyítékok: `evidence/2026-11-08T1402Z_v1` (v1), `evidence/2026-11-08T1514Z_v2` (v2, elsődleges), `evidence/2026-11-08T1516Z_v2-functional` (v2 funkcionális teszt), `evidence/2026-11-08T1406Z_v2` és `T1409Z_v2-functional` (első utókövetés, 41 maradék sérülékenység), `evidence/2026-11-08T1424Z_v2-dash` (a docker-bench dash-hibájának bizonyítéka)
+- Eredmény: docker-bench score 5 → 61, WARN 29 → 4, magas + kritikus CVE 454 → 0
 
 Újragenerálás (a `docx` és a `pptxgenjs` npm csomag kell hozzá):
 
 ```bash
 NODE_PATH=<node_modules> node scripts/build-report.js
 NODE_PATH=<node_modules> node scripts/build-slides.js [<pptx skill>/scripts/apply_theme.js]
-python3 scripts/summarize.py evidence/2026-11-08T1402Z_v1 evidence/2026-11-08T1406Z_v2
+python3 scripts/summarize.py evidence/2026-11-08T1402Z_v1 evidence/2026-11-08T1514Z_v2
 ```
 
 ## Menet

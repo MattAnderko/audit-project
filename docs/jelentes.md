@@ -9,7 +9,7 @@ Audit dokumentáció: audit terv, bizonyítékok és audit jelentés
 | **Auditált fél / rendszergazda** | _TBD_ |
 | **A vizsgált rendszer** | „Időpontfoglaló” webalkalmazás és Docker futtatókörnyezete |
 | **Követelményrendszer** | CIS Docker Benchmark v1.6.0 |
-| **Mérési időpontok** | v1: 2026-11-08 14:02 UTC · v2 (utókövetés): 2026-11-08 14:06 UTC |
+| **Mérési időpontok** | v1: 2026-11-08 14:02 UTC · v2 (utókövetés): 2026-11-08 14:06 és 15:14 UTC |
 | **Dokumentum verzió** | 1.0 |
 
 # 1. Vezetői összefoglaló
@@ -20,11 +20,12 @@ Főbb eredmények:
 
 - A kiinduló (v1), alapbeállításokkal telepített környezetben 13 megállapítást tettünk: 1 kritikus, 4 magas, 4 közepes és 4 alacsony kockázatút. A legsúlyosabb az M-05: az adatbázis-szerver a host minden hálózati interfészén elérhető volt, gyenge jelszóval, amely nyílt szövegként szerepelt a konfigurációs fájlban.
 - A konténerek root felhasználóval futottak, a jelszavak a `docker inspect` kimenetéből kiolvashatók voltak, és a nem rögzített (`latest`) alap image-ekben 454 magas vagy kritikus súlyosságú ismert sérülékenység volt.
-- Az akcióterv végrehajtása után a docker-bench pontszáma 5-ről 61-re nőtt, a WARN eredmények száma 29-ről 4-re, a magas és kritikus sérülékenységeké 454-ről 41-re csökkent (−91%). Tíz megállapítás teljesen, egy részben javult, kettőt tudatosan felvállaltunk. A kritikus és magas kockázatú megállapítások közül négy megszűnt, egy (M-04) csökkent.
-- A v2-ben maradt 4 WARN közül három tudatosan felvállalt kockázat (külön partíció, authorization plugin, content trust), a negyedik az egyetlen, szükséges proxy portra vonatkozik. Az upstream image-ekben maradt, már javítható sérülékenységekre új akciótervi pontokat javaslunk (7.3 fejezet).
+- Az akcióterv végrehajtása után a docker-bench pontszáma 5-ről 61-re nőtt, a WARN eredmények száma 29-ről 4-re, a magas és kritikus sérülékenységeké 454-ről 0-ra csökkent. Tizenegy megállapítás javult, kettőt tudatosan felvállaltunk. A kritikus és magas kockázatú megállapítások mindegyike megszűnt.
+- Az első utókövetés még 41 magas vagy kritikus sérülékenységet talált az upstream image-ekben (gosu, pip, Alpine csomagok). Egy második javítási kör után az ismételt mérés 0-t mutatott (4.4 fejezet).
+- A v2-ben maradt 4 WARN közül három tudatosan felvállalt kockázat (külön partíció, authorization plugin, content trust), a negyedik az egyetlen, szükséges proxy portra vonatkozik.
 - Az automatizált eszköz négy ellenőrzésnél (2.2, 2.9, 5.15, 5.3) adott a valós állapottól eltérő eredményt, ezért a kimenetét auditori ellenőrzés nélkül nem fogadtuk el.
 
-**Összegzés:** a v2 környezet a CIS Docker Benchmark Level 1 ajánlásait a vizsgált hoston a felvállalt kivételekkel teljesíti. Éles üzembe helyezés előtt a maradék sérülékenységek javítása és a távoli naplógyűjtés kiépítése javasolt.
+**Összegzés:** a v2 környezet a CIS Docker Benchmark Level 1 ajánlásait a vizsgált hoston a felvállalt kivételekkel teljesíti. Éles üzembe helyezés előtt a rendszeres image-szkennelés és újraépítés, valamint a távoli naplógyűjtés kiépítése javasolt (7.3 fejezet).
 
 # 2. Audit terv
 
@@ -100,6 +101,7 @@ Elsődleges mérce a CIS Docker Benchmark v1.6.0. Ezt a verziót implementálja 
 | Értékelés | Megállapítások, kockázatértékelés, akcióterv | 6. fejezet |
 | Javítás | v2 környezet (`scripts/deploy-v2.sh`, `infra/v2`) | futó v2 |
 | Utókövetés | Újramérés, funkcionális teszt, összehasonlítás | `evidence/2026-11-08T1406Z_v2` |
+| Javítás II., újramérés | A maradék sérülékenységek javítása, ismételt mérés | `evidence/2026-11-08T1514Z_v2` |
 | Jelentés | Jelen dokumentum, prezentáció | - |
 
 # 3. A vizsgált rendszer
@@ -151,9 +153,11 @@ A bizonyítékokat a `scripts/collect-evidence.sh` szkript gyűjtötte, mérése
 | Mérés | Tartalom | Megjegyzés |
 |---|---|---|
 | `2026-11-08T1402Z_v1` | Kiinduló állapot | elsődleges bizonyíték (v1) |
-| `2026-11-08T1406Z_v2` | v2, docker-bench `bash` alatt | elsődleges bizonyíték (v2) |
-| `2026-11-08T1409Z_v2-functional` | v2 funkcionális és izolációs teszt (`scripts/functional-test.sh`) | kiegészítő bizonyíték (4.4 fejezet) |
+| `2026-11-08T1406Z_v2` | v2, első utókövetés | a maradék sérülékenységek bizonyítéka (4.4 fejezet) |
+| `2026-11-08T1409Z_v2-functional` | v2 funkcionális teszt az első utókövetéskor | kiegészítő bizonyíték |
 | `2026-11-08T1424Z_v2-dash` | v2, docker-bench `dash` alatt | eszközhiba bizonyítéka (5.2 fejezet, T-1), értékelésre nem használtuk |
+| `2026-11-08T1514Z_v2` | v2 a maradék sérülékenységek javítása után | elsődleges bizonyíték (v2) |
+| `2026-11-08T1516Z_v2-functional` | v2 funkcionális és izolációs teszt (`scripts/functional-test.sh`) | kiegészítő bizonyíték (4.4 fejezet) |
 
 ## 4.2 CIS Docker Benchmark: eredmények fejezetenként
 
@@ -170,7 +174,7 @@ A docker-bench 117 ellenőrzést futtatott. Az *INFO* és *NOTE* eredmények man
 | **Összesen (1-6.)** | **34** | **29** | **66** | **4** |
 | docker-bench score | **5** | | **61** | |
 
-A 7. fejezet (Swarm) 9 ellenőrzése N/A, ezért kihagytuk. Az INFO eredmények egy része olyan fájlokra vonatkozik, amelyek ezen a disztribúción nem léteznek (pl. `/etc/default/docker`, `/etc/sysconfig/docker`). A 3. fejezet PASS-ainak növekedése (8 → 12) abból ered, hogy a v2-ben létrejött az `/etc/docker` könyvtár és a `daemon.json`, így azok jogosultságai is ellenőrizhetővé váltak.
+A v2 oszlopok mindkét v2 mérésre (14:06 és 15:14 UTC) érvényesek, a docker-bench eredményük azonos. A 7. fejezet (Swarm) 9 ellenőrzése N/A, ezért kihagytuk. Az INFO eredmények egy része olyan fájlokra vonatkozik, amelyek ezen a disztribúción nem léteznek (pl. `/etc/default/docker`, `/etc/sysconfig/docker`). A 3. fejezet PASS-ainak növekedése (8 → 12) abból ered, hogy a v2-ben létrejött az `/etc/docker` könyvtár és a `daemon.json`, így azok jogosultságai is ellenőrizhetővé váltak.
 
 ## 4.3 A v1 mérés főbb bizonyítékai
 
@@ -205,16 +209,34 @@ A 454 magas vagy kritikus sérülékenységből mindössze 39-hez volt javított
 
 ## 4.4 A v2 mérés főbb bizonyítékai
 
-| Image (v2) | Alap OS | CRITICAL | HIGH | Forrás |
+Az első utókövetés (`2026-11-08T1406Z_v2`) a v2 image-ekben még 41 magas vagy kritikus sérülékenységet talált, mindegyikhez volt javított verzió:
+
+| Image (v2, első utókövetés) | Alap OS | CRITICAL | HIGH | Forrás |
 |---|---|---|---|---|
 | booking-app:v2 | Alpine 3.24.4 | 0 | 5 | a pip vendorolt csomagjai (urllib3, msgpack, setuptools) |
 | booking-db:v2 | Alpine 3.24.4 | 1 | 25 | `gosu` Go bináris (Go stdlib) |
-| booking-proxy:v2 | Alpine 3.24.2 | 1 | 9 | libexpat, brotli-libs, curl, musl |
-| **Összesen** | | **2** | **39** | mind a 41-hez van javított verzió |
+| booking-proxy:v2 | Alpine 3.24.2 | 1 | 9 | libexpat, brotli-libs, curl, musl, zlib |
+| **Összesen** | | **2** | **39** | |
+
+A rögzített alap image-ek a mérés idején megegyeztek az upstream legfrissebb változatával, így újabb digestre váltással a sérülékenységek nem szűntek volna meg. Ezért egy második javítási kört végeztünk (M-04):
+
+- **db:** a `gosu` törlése. Az entrypoint csak root futtatáskor hívja, ez a konténer pedig eleve `postgres` felhasználóval indul.
+- **app:** a pip eltávolítása a függőségek telepítése után. A pip csak a buildhez kell, a sérülékeny csomagok a beépített (vendorolt) függőségei voltak.
+- **proxy:** `apk upgrade` a build során, az Alpine biztonsági javításaival. A build idejére a felhasználó rootra vált, a konténer továbbra is a 101-es felhasználóval fut. Ennek ára, hogy az image tartalma a build időpontjától is függ. A ténylegesen mért image digestje a bizonyítékban rögzített (`docker/images.txt`), a rendszeres újraépítést pedig az A-1 akciótervi pont kezeli.
+
+Az ismételt mérés (`2026-11-08T1514Z_v2`) szerint a három image-ben nincs magas vagy kritikus sérülékenység (összesen 2 közepes és 1 alacsony maradt), a docker-bench eredménye változatlan.
+
+| Image (v2, javítás után) | Alap OS | CRITICAL | HIGH | MEDIUM | LOW |
+|---|---|---|---|---|---|
+| booking-app:v2 | Alpine 3.24.4 | 0 | 0 | 1 | 1 |
+| booking-db:v2 | Alpine 3.24.4 | 0 | 0 | 1 | 0 |
+| booking-proxy:v2 | Alpine 3.24.2 | 0 | 0 | 0 | 0 |
 
 A Trivy config szkennelése a v2 Dockerfile-okban 0 hibát talált (v1: 3). Az `auditctl -l` a v2-ben 12 Docker-szabályt mutat. A 13. szabály (`/etc/containerd/config.toml`) nem töltődött be, mert a fájl ezen a hoston nem létezik, az 1.1.12 ellenőrzés ezért INFO. A daemon a `userns-remap` miatt külön tárolót használ (`/var/lib/docker/100000.100000`).
 
-A funkcionális teszt (`2026-11-08T1409Z_v2-functional`) szerint a v2 stack működik: a főoldal HTTP 200, a foglalás 302, az admin nézet hitelesítés nélkül és a régi jelszóval 401, a generált secrettel 200. A host hálózati címén a 80, 8000, 5432 és 8080 port zárt. Az app konténerben `uid=10001(app)`, ami a hoston a 110001-es UID-nak felel meg (userns-remap). A root fájlrendszer írása `Read-only file system` hibát ad, a környezeti változók között jelszó nincs, csak a `*_FILE` hivatkozások.
+A funkcionális teszt (`2026-11-08T1516Z_v2-functional`) szerint a v2 stack működik: a főoldal HTTP 200, a foglalás 302, az admin nézet hitelesítés nélkül és a régi jelszóval 401, a generált secrettel 200. A host hálózati címén a 80, 8000, 5432 és 8080 port zárt. Az app konténerben `uid=10001(app)`, ami a hoston a 110001-es UID-nak felel meg (userns-remap). A root fájlrendszer írása `Read-only file system` hibát ad, a környezeti változók között jelszó nincs, csak a `*_FILE` hivatkozások.
+
+**Megfigyelés (telepítési szkript):** a második javítási kör telepítésekor az app nem indult el, mert az adatbázis elutasította a jelszavát. Az ok: a `deploy-v2.sh` újratelepítéskor törölte a célkönyvtárat a titkokkal együtt, és új jelszót generált, a meglévő adatbázis-volume viszont az első inicializáláskor beállított jelszót őrizte. A szkript azóta a titkokat külön, megmaradó könyvtárban tárolja (`/opt/booking/secrets`), az adatbázis-felhasználó jelszavát pedig a meglévő titokhoz igazítottuk. Az első telepítés üres volume-ra történt, ezért a hiba ott nem jelentkezett.
 
 # 5. Elemzés
 
@@ -226,7 +248,7 @@ Minden WARN eredményt összevetettünk a `docker inspect`, a konfigurációs f�
 |---|---|---|---|
 | 4.2 | Megbízható alap image | Hivatalos image-ek, de nem rögzített tag | Hivatalos image-ek, digesttel rögzítve |
 | 4.3 | Felesleges csomagok | Teljes Debian image, fordítókkal | Alpine, minimális |
-| 4.4 | Szkennelés és újraépítés | Nincs folyamat, 454 H+C | Szkennelve, 41 H+C maradt (M-04) |
+| 4.4 | Szkennelés és újraépítés | Nincs folyamat, 454 H+C | Szkennelve és újraépítve, 0 H+C (M-04) |
 | 4.8 | setuid/setgid bitek | Nincs eltávolítva | Az app image-ben eltávolítva |
 | 4.10 | Titkok a Dockerfile-ban | Nincs a Dockerfile-ban, de a compose-ban igen | Nincs (secret) |
 | 5.4 | Capability-k | Alapértelmezett készlet (az eszköz PASS-t ad, mert csak a hozzáadást vizsgálja) | `cap_drop: ALL` |
@@ -300,7 +322,7 @@ Az eszköz kimenete gyors és jól megismételhető, de önmagában nem bizonyí
 | M-05 | Csak a proxy publikál portot, `127.0.0.1:8080`, nem privilegizált port, db a belső hálózaton | preventív | javítás | WARN | PASS | Javítva |
 | M-02 | `USER` minden image-ben (10001, postgres, 101) | preventív | javítás | WARN | PASS | Javítva |
 | M-03 | Docker secret, `*_FILE` változók, telepítéskor generált titkok | preventív | javítás | NOTE | megfelel | Javítva |
-| M-04 | Digesttel rögzített alpine image-ek, Trivy szkennelés | preventív | javítás | 454 H+C | 41 H+C | Részben |
+| M-04 | Digesttel rögzített alpine image-ek, gosu és pip eltávolítva, Alpine csomagfrissítés a buildben, Trivy szkennelés | preventív | javítás | 454 H+C | 0 H+C | Javítva |
 | M-10 | `daemon.json`: icc, userns-remap, live-restore, userland-proxy, no-new-privileges, journald | preventív | javítás | 7 WARN | PASS | Javítva (2.13 részben) |
 | M-01 | auditd szabályok (`docker.rules`), 12 szabály betöltve | felismerő | javítás | WARN | PASS | Javítva |
 | M-06 | `mem_limit`, `cpu_shares`, `pids_limit` | preventív | javítás | WARN | PASS | Javítva |
@@ -322,23 +344,21 @@ Az eszköz kimenete gyors és jól megismételhető, de önmagában nem bizonyí
 | docker-bench score | 5 | 61 | +56 |
 | WARN (CIS 1-6.) | 29 | 4 | −86% |
 | PASS (CIS 1-6.) | 34 | 66 | +94% |
-| Trivy CRITICAL + HIGH | 454 | 41 | −91% |
-| Trivy összes sérülékenység | 3180 | 129 | −96% |
+| Trivy CRITICAL + HIGH | 454 | 0 | −100% |
+| Trivy összes sérülékenység | 3180 | 3 | −99,9% |
 | Trivy Dockerfile misconfiguration | 3 | 0 | −100% |
 | Publikált portok | 3 (0.0.0.0) | 1 (127.0.0.1) | −2 |
 | Root konténerek | 3 | 0 | −3 |
 
-A v2-ben maradt 4 WARN: 1.1.1 a külön partíció (M-12), 2.12 és 4.5 az authorization plugin és a content trust (M-13), 5.9 pedig az egyetlen, szükséges proxy port, ami elfogadható.
+A v2-ben maradt 4 WARN: 1.1.1 a külön partíció (M-12), 2.12 és 4.5 az authorization plugin és a content trust (M-13), 5.9 pedig az egyetlen, szükséges proxy port, ami elfogadható. A Trivy-értékek a javítás utáni v2 mérésből származnak, az első utókövetéskor még 41 magas vagy kritikus sérülékenység volt (4.4 fejezet).
 
 ## 7.3 Új akciótervi javaslatok (maradványkockázat)
 
 | # | Javaslat | Felelős | Prioritás |
 |---|---|---|---|
-| A-1 | A proxy image-ben `apk upgrade` a build során, vagy újabb alap image (libexpat, brotli, curl) | rendszergazda | magas |
-| A-2 | A db image-ből a `gosu` eltávolítása: a konténer eleve `postgres` userrel indul, ezért nincs rá szükség | rendszergazda | magas |
-| A-3 | Az app image-ben a pip/setuptools frissítése vagy eltávolítása a futtatási rétegből (multi-stage build) | fejlesztő | közepes |
-| A-4 | Rendszeres (pl. heti) Trivy szkennelés és újraépítés CI-ban, a CIS 4.4 folyamatos teljesítéséhez | fejlesztő | közepes |
-| A-5 | Távoli naplógyűjtés (journald → központi syslog) a 2.13 teljes teljesítéséhez | rendszergazda | alacsony |
+| A-1 | Rendszeres (pl. heti) Trivy szkennelés és újraépítés CI-ban, a CIS 4.4 folyamatos teljesítéséhez. A digest szerinti rögzítés miatt e nélkül az image-ek sérülékenységei idővel újra felhalmozódnak. | fejlesztő | magas |
+| A-2 | Távoli naplógyűjtés (journald → központi syslog) a 2.13 teljes teljesítéséhez | rendszergazda | alacsony |
+| A-3 | A proxy alap image digestjének frissítése, amint az upstream javított image megjelenik, és ezzel a build-idejű `apk upgrade` kiváltása | rendszergazda | alacsony |
 
 # 8. Korlátok és következtetés
 
@@ -379,7 +399,7 @@ A webes források elérésének dátuma: 2026-11-08.
 | `infra/v1/`, `infra/v2/` | A vizsgált konfigurációk (compose, Dockerfile, daemon.json, auditd szabályok) |
 | `scripts/setup-host.sh` | A host előkészítése (v1), Ubuntu és Manjaro/Arch |
 | `scripts/enable-apparmor-grub.sh` | Az AppArmor bekapcsolása a kernel boot paramétereiben |
-| `scripts/deploy-v2.sh` | A v2 hardening telepítése |
+| `scripts/deploy-v2.sh` | A v2 hardening telepítése (a titkokat újratelepítéskor megőrzi) |
 | `scripts/collect-evidence.sh` | Bizonyítékgyűjtés (docker-bench, Trivy, konfigurációk, SHA-256) |
 | `scripts/functional-test.sh` | A v2 funkcionális és izolációs tesztje |
 | `scripts/summarize.py` | Eredmények összesítése és összehasonlítása |

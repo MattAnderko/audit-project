@@ -225,7 +225,7 @@ const fixes = [
   ["M-05", "Egyetlen port: 127.0.0.1:8080, DB belső hálózaton"],
   ["M-02", "USER minden image-ben (10001 / postgres / 101)"],
   ["M-03", "Docker secrets, *_FILE, telepítéskor generálva"],
-  ["M-04", "Digesttel rögzített alpine image-ek"],
+  ["M-04", "Rögzített alpine image-ek, gosu/pip törölve"],
   ["M-06/07", "erőforrás-korlátok, read-only root FS"],
   ["M-01", "auditd szabályok a Docker fájljaira"],
   ["M-08", "cap_drop: ALL, no-new-privileges"],
@@ -247,7 +247,7 @@ s.addNotes("A javítások nagy része néhány sor a compose fájlban és a Dock
 // ---- 9. Előtte–utána ----------------------------------------------------------------------
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Eredmények" });
 s.addText("Utókövetés: előtte és utána", { placeholder: "title" });
-[["5 → 61", "docker-bench score"], ["29 → 4", "WARN (CIS 1–6.)"], ["454 → 41", "magas + kritikus CVE"], ["3 → 0", "root konténer"]].forEach(([n, l], i) => {
+[["5 → 61", "docker-bench score"], ["29 → 4", "WARN (CIS 1–6.)"], ["454 → 0", "magas + kritikus CVE"], ["3 → 0", "root konténer"]].forEach(([n, l], i) => {
   const x = 0.5 + i * 2.3;
   card(s, `st9-${i}`, x, 1.2, 2.1, 1.1);
   text(s, `st9-n-${i}`, n, { x: x + 0.1, y: 1.25, w: 1.9, h: 0.6, fontSize: 26, bold: true, color: C.accent1, align: "center", valign: "middle" });
@@ -265,7 +265,7 @@ s.addChart(pres.charts.BAR, [
   showTitle: true, title: "WARN eredmények CIS fejezetenként", titleFontSize: 13, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
 });
 text(s, "cmp-note", "Maradék 4 WARN: partíció, authorization, content trust (felvállalva), 1 szükséges proxy port", { x: 0.5, y: 4.8, w: 8.4, h: 0.3, fontSize: 11, color: C.accent6 });
-s.addNotes("10 megállapítás teljesen, 1 részben javult, 2 kockázatot tudatosan felvállaltunk. A host fejezetben az auditd szabályok 8 WARN-t szüntettek meg. A Trivy szerint 91%-kal csökkent a magas és kritikus sérülékenységek száma. A maradék 41 mindegyikéhez van javított verzió, ezekre új akciótervi pont készült.");
+s.addNotes("11 megállapítás javult, 2 kockázatot tudatosan felvállaltunk. A host fejezetben az auditd szabályok 8 WARN-t szüntettek meg. Az első utókövetés még 41 magas vagy kritikus sérülékenységet talált az upstream image-ekben (gosu, pip, Alpine csomagok). Egy második javítási kör után az ismételt mérés 0-t mutatott.");
 
 // ---- 10. Tanulságok ------------------------------------------------------------------------
 s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Eredmények" });
@@ -278,9 +278,9 @@ text(s, "l-b", [
 ], { x: 0.5, y: 1.75, w: 4.3, h: 2.4, fontSize: 14, color: C.background1, paraSpaceAfter: 8, valign: "top" });
 text(s, "r-h", "Következő lépések", { x: 5.2, y: 1.25, w: 4.3, h: 0.4, fontSize: 18, bold: true, color: C.accent1 });
 text(s, "r-b", [
-  { text: "Maradék CVE-k javítása (apk, gosu, pip)", options: { bullet: true, breakLine: true } },
-  { text: "Heti Trivy szkennelés CI-ban (CIS 4.4)", options: { bullet: true, breakLine: true } },
-  { text: "Távoli naplógyűjtés (CIS 2.13)", options: { bullet: true } },
+  { text: "Heti Trivy szkennelés és újraépítés CI-ban (CIS 4.4)", options: { bullet: true, breakLine: true } },
+  { text: "Távoli naplógyűjtés (CIS 2.13)", options: { bullet: true, breakLine: true } },
+  { text: "Proxy: javított upstream alap image, ha megjelenik", options: { bullet: true } },
 ], { x: 5.2, y: 1.75, w: 4.3, h: 2.4, fontSize: 14, color: C.background1, paraSpaceAfter: 8, valign: "top" });
 text(s, "concl", "Az alapbeállításokkal telepített Docker környezet kritikus kockázatot hordoz, de néhány sor konfigurációval az alkalmazás módosítása nélkül javítható.", { x: 0.5, y: 4.3, w: 9.0, h: 0.6, fontSize: 14, italic: true, color: C.background2 });
 s.addNotes("A legfontosabb módszertani tanulság: az automatizált eszköz négy ellenőrzésnél tévedett. Ezeket a forráskód elemzésével igazoltuk, és minden megállapítást független bizonyítékkal is alátámasztottunk. A fennmaradó kockázatok kezelésére új akciótervet javasoltunk. Kérdések?");

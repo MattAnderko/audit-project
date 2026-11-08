@@ -1,6 +1,10 @@
 # v2 – reverse proxy: nem root nginx (8080-as port), a konfiguráció az image-be építve
 FROM nginxinc/nginx-unprivileged:alpine@sha256:b5047b9b76845eac124358373c6852377c52e4b05834a47647e955dd91cb8f1e
 
+# M-04: az Alpine csomagok biztonsági frissítései (a rögzített alap image óta megjelent javítások)
+USER root
+RUN apk upgrade --no-cache
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Az alap image is a nginx (101) felhasználóval fut; explicit USER a Dockerfile-ban (CIS 4.1, Trivy DS-0002)

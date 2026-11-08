@@ -1,0 +1,17 @@
+2026-11-08T16:15:06+01:00	INFO	[vuln] Vulnerability scanning is enabled
+2026-11-08T16:15:06+01:00	INFO	Detected OS	family="alpine" version="3.24.4"
+2026-11-08T16:15:06+01:00	INFO	[alpine] Detecting vulnerabilities...	os_version="3.24" repository="3.24" pkg_num=53
+2026-11-08T16:15:06+01:00	INFO	Number of language-specific files	num=0
+2026-11-08T16:15:06+01:00	WARN	Using severities from other vendors for some vulnerabilities. Read https://trivy.dev/docs/v0.75/guide/scanner/vulnerability#severity-selection for details.
+
+Report Summary
+
+┌───────────────────────────────┬────────┬─────────────────┐
+│            Target             │  Type  │ Vulnerabilities │
+├───────────────────────────────┼────────┼─────────────────┤
+│ booking-db:v2 (alpine 3.24.4) │ alpine │        0        │
+└───────────────────────────────┴────────┴─────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
