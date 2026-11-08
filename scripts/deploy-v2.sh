@@ -14,10 +14,10 @@ if [[ -f "$REPO_ROOT/infra/v1/compose.yaml" ]]; then
 fi
 
 # 2. Host / daemon hardening (M-01, M-10)
-install -m 0644 -o root -g root "$REPO_ROOT/infra/v2/host/daemon.json" /etc/docker/daemon.json
-install -m 0640 -o root -g root "$REPO_ROOT/infra/v2/host/docker.rules" /etc/audit/rules.d/docker.rules
+install -D -m 0644 -o root -g root "$REPO_ROOT/infra/v2/host/daemon.json" /etc/docker/daemon.json
+install -D -m 0640 -o root -g root "$REPO_ROOT/infra/v2/host/docker.rules" /etc/audit/rules.d/docker.rules
 if ! augenrules --load; then
-  echo "FIGYELEM: az auditd szabályok nem tölthetők be (pl. a WSL2 kernel nem támogatja az audit alrendszert)." >&2
+  echo "FIGYELEM: az auditd szabályok nem tölthetők be (pl. a kernel audit támogatása hiányzik, vagy egy szabály nem létező útvonalra mutat)." >&2
 fi
 systemctl reset-failed docker docker.socket 2>/dev/null || true
 systemctl restart docker

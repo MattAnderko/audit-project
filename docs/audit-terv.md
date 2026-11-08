@@ -28,8 +28,8 @@
 
 | Réteg | Komponens | Megjegyzés |
 |---|---|---|
-| Host | Ubuntu 24.04.5 LTS (WSL2, kernel 6.18) | a WSL2 korlátai: nincs auditd és AppArmor támogatás |
-| Konténer-platform | Docker Engine 29.9.3, Docker Compose v2 | |
+| Host | Manjaro Linux, natív telepítés (kernel 6.18.33) | AppArmor és auditd aktív |
+| Konténer-platform | Docker Engine 29.8.2, Docker Compose v5.1.0 | |
 | Konténerek | `proxy` – Nginx reverse proxy | egyedüli publikált port |
 | | `app` – időpontfoglaló webalkalmazás (Python, Flask, gunicorn) | belső hálózat |
 | | `db` – PostgreSQL | belső hálózat, perzisztens volume |
@@ -109,7 +109,7 @@ _TBD – a kick-off után kitöltendő:_ a rendszer célja és felhasználói k�
 | Eszköz | Verzió | Cél |
 |---|---|---|
 | docker-bench-security | commit `154869d` (2026-06-04) | CIS Docker Benchmark automatizált ellenőrzése |
-| Trivy | 0.76.2 | image-sérülékenységek, Dockerfile és compose misconfiguration |
+| Trivy | 0.75.0 | image-sérülékenységek, Dockerfile és compose misconfiguration |
 | (opcionális) Hadolint | _TBD_ | Dockerfile best practice |
 
 > Az automatizált eszköz eredménye önmagában nem megállapítás. Minden FAIL / WARN eredményt az auditor manuálisan ellenőriz (a fals pozitívokat kiszűri), és a manuális (*Manual*) CIS ajánlásokat külön értékeli.

@@ -1,0 +1,25 @@
+2026-11-08T15:24:17+01:00	INFO	[misconfig] Misconfiguration scanning is enabled
+2026-11-08T15:24:17+01:00	INFO	[checks-client] Using existing checks from cache	path="/root/.cache/trivy/policy/content"
+2026-11-08T15:24:18+01:00	INFO	Detected config files	num=3
+
+Report Summary
+
+┌──────────────────┬────────────┬───────────────────┐
+│      Target      │    Type    │ Misconfigurations │
+├──────────────────┼────────────┼───────────────────┤
+│ app.Dockerfile   │ dockerfile │         0         │
+├──────────────────┼────────────┼───────────────────┤
+│ db.Dockerfile    │ dockerfile │         0         │
+├──────────────────┼────────────┼───────────────────┤
+│ proxy.Dockerfile │ dockerfile │         0         │
+└──────────────────┴────────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+📣 [34mNotices:[0m
+  - Version 0.76.2 of Trivy is now available, current version is 0.75.0
+
+To suppress version checks, run Trivy scans with the --skip-version-check flag
+

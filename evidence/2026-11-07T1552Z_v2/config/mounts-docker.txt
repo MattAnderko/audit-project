@@ -1,3 +1,0 @@
-/var/lib/docker/100000.100000
-TARGET SOURCE   FSTYPE
-/      /dev/sdd ext4

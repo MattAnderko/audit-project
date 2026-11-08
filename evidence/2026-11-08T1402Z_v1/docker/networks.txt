@@ -1,0 +1,5 @@
+NETWORK ID     NAME              DRIVER    SCOPE
+7682cad9af02   booking_default   bridge    local
+22f0c500068c   bridge            bridge    local
+a726ede4a308   host              host      local
+a03776b55f7f   none              null      local

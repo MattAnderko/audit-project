@@ -1,0 +1,6 @@
+NETWORK ID     NAME                  DRIVER    SCOPE
+1d1126ef2633   booking-v2_backend    bridge    local
+da466f12a5a7   booking-v2_frontend   bridge    local
+a7815e996781   bridge                bridge    local
+44c9977fccc6   host                  host      local
+e157514c6eb0   none                  null      local

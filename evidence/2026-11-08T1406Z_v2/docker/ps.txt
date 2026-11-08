@@ -1,0 +1,4 @@
+CONTAINER ID                                                       IMAGE              COMMAND                                                         CREATED              STATUS                        PORTS                      NAMES
+d4038359adc7b637fd5b476ed97aa23112b46fbe26019de8b7f557e600fea665   booking-proxy:v2   "/docker-entrypoint.sh nginx -g 'daemon off;'"                  About a minute ago   Up 31 seconds (healthy)       127.0.0.1:8080->8080/tcp   booking-v2-proxy-1
+3ab8842a8d69309aea4457398844e4c601528b2528176fb16013daeaeae765cd   booking-app:v2     "gunicorn -b 0.0.0.0:8000 -w 2 --worker-tmp-dir /tmp app:app"   About a minute ago   Up 37 seconds (healthy)       8000/tcp                   booking-v2-app-1
+e579be23d34868ee2a347f744c6b914317d4c1233cc1fc6a6183bc4cada840d9   booking-db:v2      "docker-entrypoint.sh postgres"                                 About a minute ago   Up About a minute (healthy)   5432/tcp                   booking-v2-db-1

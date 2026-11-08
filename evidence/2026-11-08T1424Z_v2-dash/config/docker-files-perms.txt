@@ -1,0 +1,11 @@
+-rw-r--r-- 1 root root   1268 okt    1 02.40 /lib/systemd/system/docker.service
+-rw-r--r-- 1 root root    295 okt    1 02.40 /lib/systemd/system/docker.socket
+-rw-r--r-- 1 root root   1268 okt    1 02.40 /usr/lib/systemd/system/docker.service
+-rw-r--r-- 1 root root    295 okt    1 02.40 /usr/lib/systemd/system/docker.socket
+srw-rw---- 1 root docker    0 nov    8 14.55 /var/run/docker.sock
+
+/etc/docker:
+total 8
+drwxr-xr-x 1 root root   22 nov    8 15.04 .
+drwxr-xr-x 1 root root 4790 nov    8 15.24 ..
+-rw-r--r-- 1 root root  179 nov    8 15.04 daemon.json

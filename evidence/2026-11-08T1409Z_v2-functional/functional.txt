@@ -1,0 +1,23 @@
+# v2 funkcionális teszt, 2026-11-08T14:09:17Z, host: mate-pc
+
+## Alkalmazás a proxyn keresztül (http://127.0.0.1:8080)
+GET  /                         -> 200
+POST /book/2 (foglalás)          -> 302
+GET  /admin (hitelesítés nélkül) -> 401
+GET  /admin (v1 jelszó)          -> 401
+GET  /admin (v2 secret)          -> 200
+
+## Elérhetőség a host hálózati címén (192.168.0.31)
+port 80: zárt
+port 8000: zárt
+port 5432: zárt
+port 8080: zárt
+
+## Az app konténer belülről
+id:                 uid=10001(app) gid=10001(app) groups=10001(app)
+root fs írása:      touch: /x: Read-only file system
+jelszó-jellegű env: ADMIN_PASSWORD_FILE=<érték nem jelenik meg> DB_PASSWORD_FILE=<érték nem jelenik meg> 
+AppArmor profil:    docker-default
+
+## userns-remap: az app folyamat felhasználója a hoston
+konténer uid 10001 -> host uid 110001

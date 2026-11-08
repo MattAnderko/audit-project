@@ -1,0 +1,31 @@
+[2026-11-08T14:24:11Z] Mérés indul: RUN_ID=2026-11-08T1424Z_v2-dash, auditor=mate
+[2026-11-08T14:24:11Z] RUN: bash -c hostname; uname -a; cat /etc/os-release > meta/host.txt
+[2026-11-08T14:24:11Z] RUN: docker version > meta/docker-version.txt
+[2026-11-08T14:24:11Z] RUN: docker info > meta/docker-info.txt
+[2026-11-08T14:24:11Z] RUN: trivy --version > meta/trivy-version.txt
+[2026-11-08T14:24:11Z] RUN: git -C /opt/docker-bench-security rev-parse HEAD > meta/docker-bench-commit.txt
+[2026-11-08T14:24:11Z] RUN: auditctl -l > config/auditctl-rules.txt
+[2026-11-08T14:24:11Z] RUN: bash -c head -n 200 /etc/audit/rules.d/*.rules > config/audit-rules.d.txt
+[2026-11-08T14:24:11Z] RUN: bash -c docker info -f "{{.DockerRootDir}}"; findmnt -T /var/lib/docker -o TARGET,SOURCE,FSTYPE; findmnt -R /var/lib/docker -o TARGET,SOURCE,FSTYPE > config/mounts-docker.txt
+[2026-11-08T14:24:11Z]   WARN: kilépési kód 1 (bash -c docker info -f "{{.DockerRootDir}}"; findmnt -T /var/lib/docker -o TARGET,SOURCE,FSTYPE; findmnt -R /var/lib/docker -o TARGET,SOURCE,FSTYPE)
+[2026-11-08T14:24:11Z] RUN: systemctl cat docker.service docker.socket > config/docker-service.txt
+[2026-11-08T14:24:11Z] RUN: bash -c ls -la /etc/docker /var/run/docker.sock /lib/systemd/system/docker.* /usr/lib/systemd/system/docker.* 2>&1 > config/docker-files-perms.txt
+[2026-11-08T14:24:11Z] Compose / Dockerfile másolatok: /opt/booking/infra/v2
+[2026-11-08T14:24:11Z] RUN: docker ps -a --no-trunc > docker/ps.txt
+[2026-11-08T14:24:11Z] RUN: docker images --digests --no-trunc > docker/images.txt
+[2026-11-08T14:24:11Z] RUN: docker network ls > docker/networks.txt
+[2026-11-08T14:24:11Z] RUN: docker volume ls > docker/volumes.txt
+[2026-11-08T14:24:11Z] RUN: docker inspect d4038359adc7 3ab8842a8d69 e579be23d348 > docker/inspect-containers.json
+[2026-11-08T14:24:11Z] Titkok maszkolva: docker/inspect-containers.json
+[2026-11-08T14:24:11Z] RUN: docker network inspect 1d1126ef2633 da466f12a5a7 a7815e996781 44c9977fccc6 e157514c6eb0 > docker/inspect-networks.json
+[2026-11-08T14:24:11Z] RUN: docker-bench-security
+[2026-11-08T14:24:11Z]   shell: dash (/usr/bin/dash)
+[2026-11-08T14:24:16Z] RUN: trivy image --quiet --scanners vuln --format json booking-app:v2 > trivy/image_booking-app_v2.json
+[2026-11-08T14:24:16Z] RUN: trivy image --scanners vuln --severity HIGH,CRITICAL booking-app:v2 > trivy/image_booking-app_v2.txt
+[2026-11-08T14:24:16Z] RUN: trivy image --quiet --scanners vuln --format json booking-db:v2 > trivy/image_booking-db_v2.json
+[2026-11-08T14:24:16Z] RUN: trivy image --scanners vuln --severity HIGH,CRITICAL booking-db:v2 > trivy/image_booking-db_v2.txt
+[2026-11-08T14:24:16Z] RUN: trivy image --quiet --scanners vuln --format json booking-proxy:v2 > trivy/image_booking-proxy_v2.json
+[2026-11-08T14:24:16Z] RUN: trivy image --scanners vuln --severity HIGH,CRITICAL booking-proxy:v2 > trivy/image_booking-proxy_v2.txt
+[2026-11-08T14:24:16Z] RUN: trivy config --quiet --format json /home/mate/Uni/audit-project/evidence/2026-11-08T1424Z_v2-dash/config/compose > trivy/config.json
+[2026-11-08T14:24:17Z] RUN: trivy config /home/mate/Uni/audit-project/evidence/2026-11-08T1424Z_v2-dash/config/compose > trivy/config.txt
+[2026-11-08T14:24:18Z] Mérés vége, hash-ek készítése

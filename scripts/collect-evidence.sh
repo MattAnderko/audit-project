@@ -17,6 +17,8 @@ set -uo pipefail
 LABEL="${1:?Adj meg egy címkét, pl. v1 vagy v2}"
 COMPOSE_DIR="${2:-}"
 DOCKER_BENCH_DIR="${DOCKER_BENCH_DIR:-/opt/docker-bench-security}"
+# A docker-bench futtató shellje. Alapból bash; DOCKER_BENCH_SHELL=dash a T-1 eszközhiba reprodukálásához.
+DOCKER_BENCH_SHELL="${DOCKER_BENCH_SHELL:-bash}"
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 RUN_ID="$(date -u +%Y-%m-%dT%H%MZ)_${LABEL}"
@@ -97,9 +99,9 @@ if [[ -x "$DOCKER_BENCH_DIR/docker-bench-security.sh" || -f "$DOCKER_BENCH_DIR/d
   log "RUN: docker-bench-security"
   # A szkriptet a saját könyvtárából kell futtatni (relatív include-ok).
   # bash-sel futtatjuk: a 2.2, 2.4, 2.5, 2.8, 2.9, 2.12 ellenőrzések bash-szintaxist ([[ ]]) használnak,
-  # Ubuntun az `sh` (dash) alatt ezek hamisan WARN eredményt adnak (lásd a 2026-11-07T1549Z_v2 mérést).
-  log "  shell: bash $(bash --version | head -1)"
-  (cd "$DOCKER_BENCH_DIR" && bash docker-bench-security.sh -b -p -l "$OUT/docker-bench/docker-bench.log") \
+  # ahol az `sh` a dash (pl. Ubuntu), ott ezek hamisan WARN eredményt adnak (T-1, docs/jelentes.md 5.2).
+  log "  shell: ${DOCKER_BENCH_SHELL} ($(readlink -f "$(command -v "$DOCKER_BENCH_SHELL")"))"
+  (cd "$DOCKER_BENCH_DIR" && "$DOCKER_BENCH_SHELL" docker-bench-security.sh -b -p -l "$OUT/docker-bench/docker-bench.log") \
     >"$OUT/docker-bench/stdout.txt" 2>&1 || log "  WARN: docker-bench kilépési kód $?"
 else
   log "HIBA: docker-bench-security nem található itt: $DOCKER_BENCH_DIR"

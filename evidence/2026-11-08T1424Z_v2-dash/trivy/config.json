@@ -1,0 +1,39 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "0.75.0"
+  },
+  "ReportID": "01a1bb8b-b3e8-7dab-9c4a-4cada306fc17",
+  "CreatedAt": "2026-11-08T15:24:17.384897737+01:00",
+  "ArtifactName": "/home/mate/Uni/audit-project/evidence/2026-11-08T1424Z_v2-dash/config/compose",
+  "ArtifactType": "filesystem",
+  "Results": [
+    {
+      "Target": "app.Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 27,
+        "Failures": 0
+      }
+    },
+    {
+      "Target": "db.Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 27,
+        "Failures": 0
+      }
+    },
+    {
+      "Target": "proxy.Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 27,
+        "Failures": 0
+      }
+    }
+  ]
+}

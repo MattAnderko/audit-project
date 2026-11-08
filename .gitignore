@@ -7,3 +7,6 @@ secrets/
 .DS_Store
 Thumbs.db
 ~$*
+
+# LibreOffice zárolási fájlok
+.~lock.*#

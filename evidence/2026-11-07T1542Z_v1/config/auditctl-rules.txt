@@ -1,2 +1,0 @@
-Error sending rule list data request (Operation not permitted)
-There was an error while processing parameters

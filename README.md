@@ -22,6 +22,7 @@ app/                         Az időpontfoglaló alkalmazás (Flask) – v1-ben 
 docs/
   jelentes.md / .docx        Audit jelentés (terv + bizonyítékok + jelentés)
   prezentacio.pptx           Prezentáció
+  attekintes.html            Interaktív áttekintés (böngészőben nyitható)
   audit-terv.md              Audit terv (a jelentés 2. fejezetének alapja)
   templates/
     megallapitas-sablon.md   Egy megállapítás (finding) leírása
@@ -31,28 +32,33 @@ infra/
   v1/                        A kiinduló („naiv”) telepítés: compose, Dockerfile-ok, app
   v2/                        A javított telepítés (az akcióterv után)
 scripts/
+  setup-host.sh              A host előkészítése (Ubuntu vagy Manjaro/Arch)
+  enable-apparmor-grub.sh    AppArmor bekapcsolása (kernel boot paraméter)
   collect-evidence.sh        Bizonyítékgyűjtés: docker-bench, Trivy, konfigurációk + hash
+  deploy-v2.sh               A v2 telepítése
+  functional-test.sh         A v2 funkcionális tesztje
 evidence/
   README.md                  Bizonyítékkezelési szabályok
-  <futás-azonosító>/         Egy-egy mérés nyers kimenetei (pl. 2026-11-20_v1/)
+  <futás-azonosító>/         Egy-egy mérés nyers kimenetei (pl. 2026-11-08T1402Z_v1/)
 pptk/                        Az előadások anyaga (referencia)
 ```
 
 ## Állapot
 
-Az audit elkészült (2026-11-07):
+Az audit elkészült (2026-11-08):
 
-- Leadandó dokumentáció: [docs/jelentes.docx](docs/jelentes.docx) (10 oldal; forrás: [docs/jelentes.md](docs/jelentes.md))
+- Leadandó dokumentáció: [docs/jelentes.docx](docs/jelentes.docx) (14 oldal; forrás: [docs/jelentes.md](docs/jelentes.md))
 - Prezentáció: [docs/prezentacio.pptx](docs/prezentacio.pptx) (10 dia, előadói jegyzetekkel)
-- Bizonyítékok: `evidence/2026-11-07T1542Z_v1` (v1), `evidence/2026-11-07T1552Z_v2` (v2), `evidence/2026-11-07T1549Z_v2` (a docker-bench dash-hibájának bizonyítéka)
-- Eredmény: docker-bench score 5 → 38, WARN 33 → 18, magas + kritikus CVE 448 → 41
+- Interaktív áttekintés: [docs/attekintes.html](docs/attekintes.html) (böngészőben megnyitható)
+- Bizonyítékok: `evidence/2026-11-08T1402Z_v1` (v1), `evidence/2026-11-08T1406Z_v2` (v2), `evidence/2026-11-08T1409Z_v2-functional` (v2 funkcionális teszt), `evidence/2026-11-08T1424Z_v2-dash` (a docker-bench dash-hibájának bizonyítéka)
+- Eredmény: docker-bench score 5 → 61, WARN 29 → 4, magas + kritikus CVE 454 → 41
 
 Újragenerálás (a `docx` és a `pptxgenjs` npm csomag kell hozzá):
 
 ```bash
 NODE_PATH=<node_modules> node scripts/build-report.js
 NODE_PATH=<node_modules> node scripts/build-slides.js [<pptx skill>/scripts/apply_theme.js]
-python3 scripts/summarize.py evidence/2026-11-07T1542Z_v1 evidence/2026-11-07T1552Z_v2
+python3 scripts/summarize.py evidence/2026-11-08T1402Z_v1 evidence/2026-11-08T1406Z_v2
 ```
 
 ## Menet

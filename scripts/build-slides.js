@@ -81,7 +81,7 @@ s.addNotes("Bemutatkozás és a szerepek. A téma: egy időpontfoglaló webalkal
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Bevezetés" });
 s.addText("Cél, tárgy és mérce", { placeholder: "title" });
 const cards2 = [
-  ["Tárgy", "Időpontfoglaló webapp 3 konténerben: Nginx proxy, Flask app, PostgreSQL. Ubuntu 24.04 host, Docker 29.9"],
+  ["Tárgy", "Időpontfoglaló webapp 3 konténerben: Nginx proxy, Flask app, PostgreSQL. Manjaro Linux host, Docker 29.8"],
   ["Mérce", "CIS Docker Benchmark v1.6.0, Level 1. Kiegészítő: Trivy (CIS 4.4) és NIST CSF besorolás"],
   ["Módszer", "Dokumentumvizsgálat, megfigyelés, docker-bench-security, Trivy, újrateljesítés (v1 → v2)"],
 ];
@@ -102,7 +102,7 @@ s.addNotes("Az audit célja: független, eszközökkel alátámasztott értékel
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Bevezetés" });
 s.addText("A vizsgált rendszer: v1 és v2", { placeholder: "title" });
 function stack(prefix, x0, labels, ports, v2) {
-  text(s, `${prefix}-hdr`, v2 ? "v2 – akcióterv után" : "v1 – „naiv” tutorial-telepítés", { x: x0, y: 1.2, w: 4.3, h: 0.35, fontSize: 16, bold: true, color: v2 ? C.accent1 : C.accent2 });
+  text(s, `${prefix}-hdr`, v2 ? "v2 – akcióterv után" : "v1 – alapbeállításos telepítés", { x: x0, y: 1.2, w: 4.3, h: 0.35, fontSize: 16, bold: true, color: v2 ? C.accent1 : C.accent2 });
   if (v2) {
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { objectName: `${prefix}-fe`, x: x0, y: 1.65, w: 4.3, h: 2.1, rectRadius: 0.06, fill: { color: C.background2 }, line: { color: C.accent6, width: 0.75, dashType: "dash" } });
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { objectName: `${prefix}-be`, x: x0, y: 2.95, w: 4.3, h: 1.95, rectRadius: 0.06, fill: { color: C.background1, transparency: 100 }, line: { color: C.accent1, width: 1, dashType: "dash" } });
@@ -121,7 +121,7 @@ function stack(prefix, x0, labels, ports, v2) {
 }
 stack("v1", 0.5, ["proxy · root", "app · root", "db · root"], ["0.0.0.0:80", "0.0.0.0:8000", "0.0.0.0:5432"], false);
 stack("v2", 5.2, ["proxy · uid 101", "app · uid 10001", "db · postgres"], ["127.0.0.1:8080", null, null], true);
-s.addNotes("Bal oldalon a kiinduló állapot: tipikus tutorial-szintű compose. Mindhárom konténer root, mindhárom port nyitva minden interfészen, köztük az adatbázisé, gyenge jelszóval a compose fájlban. Jobb oldalon a v2: egyetlen publikált port a proxyn, az adatbázis csak belső hálózaton érhető el, minden konténer nem root userrel fut. Az alkalmazás kódja nem változott.");
+s.addNotes("Bal oldalon a kiinduló állapot: Docker alapbeállítások és a hivatalos postgres image példája szerinti compose (a források a jelentés 3.1 fejezetében). Az adatbázis portját kényelmi okból publikáltuk. Mindhárom konténer root, mindhárom port nyitva minden interfészen, köztük az adatbázisé, gyenge jelszóval a compose fájlban. Jobb oldalon a v2: egyetlen publikált port a proxyn, az adatbázis csak belső hálózaton érhető el, minden konténer nem root userrel fut. Az alkalmazás kódja nem változott.");
 
 // ---- 4. Folyamat ------------------------------------------------------------------
 pres.addSection({ title: "Audit" });
@@ -131,7 +131,7 @@ const steps = [
   ["Terv", "cél, tárgy, kizárások, kockázati módszer"],
   ["v1 telepítés", "setup-host.sh, infra/v1"],
   ["Mérés", "collect-evidence.sh: docker-bench, Trivy, SHA-256"],
-  ["Értékelés", "14 megállapítás, kockázat, CSF"],
+  ["Értékelés", "13 megállapítás, kockázat, CSF"],
   ["Javítás", "deploy-v2.sh, infra/v2"],
   ["Újramérés", "utókövetés, összehasonlítás"],
 ];
@@ -152,7 +152,7 @@ s.addNotes("A folyamat az előadások audit munkafolyamatát követi: tervezés,
 // ---- 5. v1 eredmények ---------------------------------------------------------------
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Audit" });
 s.addText("Kiinduló állapot (v1): messze a CIS ajánlásoktól", { placeholder: "title" });
-[["5", "docker-bench score", "117 ellenőrzésből"], ["33", "WARN eredmény", "CIS 1–6. fejezet"], ["448", "magas + kritikus CVE", "3 image, Trivy"]].forEach(([n, l, sub], i) => {
+[["5", "docker-bench score", "117 ellenőrzésből"], ["29", "WARN eredmény", "CIS 1–6. fejezet"], ["454", "magas + kritikus CVE", "3 image, Trivy"]].forEach(([n, l, sub], i) => {
   const y = 1.25 + i * 1.25;
   card(s, `stat5-${i}`, 0.5, y, 3.2, 1.05);
   text(s, `stat5-n-${i}`, n, { x: 0.7, y, w: 1.3, h: 1.05, fontSize: 36, bold: true, color: C.accent2, valign: "middle" });
@@ -160,8 +160,8 @@ s.addText("Kiinduló állapot (v1): messze a CIS ajánlásoktól", { placeholder
     { x: 1.95, y, w: 1.65, h: 1.05, fontSize: 14, color: C.text1, valign: "middle" });
 });
 s.addChart(pres.charts.BAR, [
-  { name: "PASS", labels: ["1 Host", "2 Daemon", "3 Daemon fájlok", "4 Image", "5 Runtime"], values: [2, 6, 12, 1, 17] },
-  { name: "WARN", labels: ["1 Host", "2 Daemon", "3 Daemon fájlok", "4 Image", "5 Runtime"], values: [12, 7, 0, 3, 11] },
+  { name: "PASS", labels: ["1 Host", "2 Daemon", "3 Daemon fájlok", "4 Image", "5 Runtime"], values: [1, 6, 8, 1, 18] },
+  { name: "WARN", labels: ["1 Host", "2 Daemon", "3 Daemon fájlok", "4 Image", "5 Runtime"], values: [9, 7, 0, 3, 10] },
 ], {
   objectName: "chart-v1", x: 4.0, y: 1.2, w: 5.5, h: 3.75, barDir: "col", barGrouping: "clustered",
   chartColors: [HEX.accent1, HEX.accent2], showLegend: true, legendPos: "t", legendFontSize: 12, legendFontFace: "+mn-lt",
@@ -170,7 +170,7 @@ s.addChart(pres.charts.BAR, [
   valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" },
   showTitle: true, title: "docker-bench eredmények CIS fejezetenként (v1)", titleFontSize: 13, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
 });
-s.addNotes("A tipikus alapbeállításos telepítés pontszáma 5. A WARN eredmények a host-auditálásban, a daemon-beállításokban és a konténer runtime-ban koncentrálódnak. A Trivy 448 magas vagy kritikus sérülékenységet talált, főleg a teljes Debian alapú latest image-ek felesleges csomagjaiban. Érdekesség: a python:latest a mérés napján Python 3.15-re váltott, és emiatt kódváltozás nélkül eltört a build. Ez a latest tag kockázatának gyakorlati példája.");
+s.addNotes("Az alapbeállításos telepítés pontszáma 5. A WARN eredmények a host-auditálásban, a daemon-beállításokban és a konténer runtime-ban koncentrálódnak. A Trivy 454 magas vagy kritikus sérülékenységet talált, főleg a teljes Debian alapú latest image-ek felesleges csomagjaiban. Érdekesség: a python:latest a projekt előkészítése közben Python 3.15-re váltott, és emiatt kódváltozás nélkül eltört a build. Ez a latest tag kockázatának gyakorlati példája.");
 
 // ---- 6. Top megállapítások ------------------------------------------------------------
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Audit" });
@@ -179,7 +179,7 @@ const top = [
   ["Kritikus", "M-05", "Adatbázis-port minden interfészen, gyenge jelszóval", "docker ps: 0.0.0.0:5432 · CIS 5.9, 5.14"],
   ["Magas", "M-02", "Mindhárom konténer root felhasználóval fut", "inspect: Config.User = \"\" · CIS 4.1"],
   ["Magas", "M-03", "Jelszavak nyílt szövegként: compose fájl és env", "docker inspect kiolvasható · CIS 4.10"],
-  ["Magas", "M-04", "latest image-ek, 448 magas/kritikus CVE", "Trivy · CIS 4.2–4.4"],
+  ["Magas", "M-04", "latest image-ek, 454 magas/kritikus CVE", "Trivy · CIS 4.2–4.4"],
   ["Magas", "M-10", "Daemon alapbeállítással fut (userns, icc, live-restore)", "nincs daemon.json · CIS 2.x"],
 ];
 top.forEach(([lvl, id, t, ev], i) => {
@@ -190,13 +190,13 @@ top.forEach(([lvl, id, t, ev], i) => {
   text(s, `t6-${i}`, t, { x: 2.65, y, w: 4.3, h: 0.62, fontSize: 14, color: C.text1, valign: "middle" });
   text(s, `ev6-${i}`, ev, { x: 7.05, y, w: 2.35, h: 0.62, fontSize: 11, color: C.accent6, valign: "middle" });
 });
-s.addNotes("Összesen 14 megállapítás: 1 kritikus, 4 magas, 4 közepes, 5 alacsony. A legsúlyosabb az M-05: a hálózatról közvetlenül elérhető adatbázis gyenge jelszóval, ami a személyes adatok (név, e-mail) kiszivárgásához vezethet. Minden megállapítást legalább egy független bizonyíték is alátámaszt, nem csak az eszköz kimenete.");
+s.addNotes("Összesen 13 megállapítás: 1 kritikus, 4 magas, 4 közepes, 4 alacsony. A legsúlyosabb az M-05: a hálózatról közvetlenül elérhető adatbázis gyenge jelszóval, ami a személyes adatok (név, e-mail) kiszivárgásához vezethet. Minden megállapítást legalább egy független bizonyíték is alátámaszt, nem csak az eszköz kimenete.");
 
 // ---- 7. Kockázati mátrix ---------------------------------------------------------------
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Audit" });
 s.addText("Kockázati mátrix: hatás × valószínűség", { placeholder: "title" });
 const lvlGrid = [["Közepes", "Magas", "Kritikus"], ["Alacsony", "Közepes", "Magas"], ["Alacsony", "Alacsony", "Közepes"]]; // sor: hatás M/K/A, oszlop: valósz. A/K/M
-const ids = [[[], ["M-02", "M-03", "M-10"], ["M-05"]], [["M-12", "M-13"], ["M-01", "M-06", "M-07", "M-08"], ["M-04"]], [["M-14"], ["M-09", "M-11"], []]];
+const ids = [[[], ["M-02", "M-03", "M-10"], ["M-05"]], [["M-12"], ["M-01", "M-06", "M-07", "M-08"], ["M-04"]], [["M-13"], ["M-09", "M-11"], []]];
 const gx = 1.45, gy = 1.25, cw = 1.55, ch = 1.1;
 ["Magas", "Közepes", "Alacsony"].forEach((h, r) => text(s, `rowlbl-${r}`, h, { x: 0.5, y: gy + r * ch, w: 0.85, h: ch, fontSize: 12, color: C.text2, align: "right", valign: "middle" }));
 ["Alacsony", "Közepes", "Magas"].forEach((v, c) => text(s, `collbl-${c}`, v, { x: gx + c * cw, y: gy + 3 * ch + 0.05, w: cw, h: 0.3, fontSize: 12, color: C.text2, align: "center" }));
@@ -208,7 +208,7 @@ for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
   const list = ids[r][c];
   if (list.length) text(s, `ids-${r}-${c}`, list.join("  "), { x: gx + c * cw + 0.08, y: gy + r * ch, w: cw - 0.2, h: ch - 0.05, fontSize: 13, bold: true, color: darkText(lvl), align: "center", valign: "middle" });
 }
-[["Kritikus", 1], ["Magas", 4], ["Közepes", 4], ["Alacsony", 5]].forEach(([l, n], i) => {
+[["Kritikus", 1], ["Magas", 4], ["Közepes", 4], ["Alacsony", 4]].forEach(([l, n], i) => {
   const y = 1.4 + i * 0.75;
   card(s, `leg-${i}`, 6.5, y, 3.0, 0.6);
   badge(s, `legb-${i}`, String(n), 6.65, y + 0.14, 0.6, RISK[l], darkText(l), 13);
@@ -226,8 +226,8 @@ const fixes = [
   ["M-02", "USER minden image-ben (10001 / postgres / 101)"],
   ["M-03", "Docker secrets, *_FILE, telepítéskor generálva"],
   ["M-04", "Digesttel rögzített alpine image-ek"],
-  ["M-06", "mem_limit, cpu_shares, pids_limit"],
-  ["M-07", "read_only root FS + tmpfs"],
+  ["M-06/07", "erőforrás-korlátok, read-only root FS"],
+  ["M-01", "auditd szabályok a Docker fájljaira"],
   ["M-08", "cap_drop: ALL, no-new-privileges"],
   ["M-10", "daemon.json: userns, icc, live-restore"],
 ];
@@ -242,20 +242,20 @@ text(s, "fix-note", [
   { text: "Az alkalmazás kódja nem változott ", options: { bold: true } },
   { text: "– minden javítás a compose fájlban, a Dockerfile-okban és a daemon.json-ban történt." },
 ], { x: 0.5, y: 4.5, w: 9.0, h: 0.45, fontSize: 13, color: C.text2 });
-s.addNotes("A javítások nagy része néhány sor a compose fájlban és a Dockerfile-okban. A titkok a v2-ben telepítéskor generálódnak, és nem kerülnek a git repóba. A host-auditálás (auditd) szabályait is telepítettük, de a WSL2 kernel nem támogatja az audit alrendszert, ezért ez nyitott maradt.");
+s.addNotes("A javítások nagy része néhány sor a compose fájlban és a Dockerfile-okban. A titkok a v2-ben telepítéskor generálódnak, és nem kerülnek a git repóba. A host-auditáláshoz auditd szabályokat telepítettünk (M-01). A userns-remap miatt a konténerbeli felhasználók a hoston nem privilegizált UID-okra képződnek le: az app 10001-es UID-ja a hoston 110001.");
 
 // ---- 9. Előtte–utána ----------------------------------------------------------------------
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Eredmények" });
 s.addText("Utókövetés: előtte és utána", { placeholder: "title" });
-[["5 → 38", "docker-bench score"], ["33 → 18", "WARN (CIS 1–6.)"], ["448 → 41", "magas + kritikus CVE"], ["3 → 0", "root konténer"]].forEach(([n, l], i) => {
+[["5 → 61", "docker-bench score"], ["29 → 4", "WARN (CIS 1–6.)"], ["454 → 41", "magas + kritikus CVE"], ["3 → 0", "root konténer"]].forEach(([n, l], i) => {
   const x = 0.5 + i * 2.3;
   card(s, `st9-${i}`, x, 1.2, 2.1, 1.1);
   text(s, `st9-n-${i}`, n, { x: x + 0.1, y: 1.25, w: 1.9, h: 0.6, fontSize: 26, bold: true, color: C.accent1, align: "center", valign: "middle" });
   text(s, `st9-l-${i}`, l, { x: x + 0.1, y: 1.85, w: 1.9, h: 0.35, fontSize: 12, color: C.text2, align: "center" });
 });
 s.addChart(pres.charts.BAR, [
-  { name: "v1", labels: ["1 Host", "2 Daemon", "3 Daemon fájlok", "4 Image", "5 Runtime"], values: [12, 7, 0, 3, 11] },
-  { name: "v2", labels: ["1 Host", "2 Daemon", "3 Daemon fájlok", "4 Image", "5 Runtime"], values: [14, 1, 0, 1, 2] },
+  { name: "v1", labels: ["1 Host", "2 Daemon", "3 Daemon fájlok", "4 Image", "5 Runtime"], values: [9, 7, 0, 3, 10] },
+  { name: "v2", labels: ["1 Host", "2 Daemon", "3 Daemon fájlok", "4 Image", "5 Runtime"], values: [1, 1, 0, 1, 1] },
 ], {
   objectName: "chart-cmp", x: 0.5, y: 2.45, w: 9.0, h: 2.35, barDir: "col", barGrouping: "clustered",
   chartColors: [HEX.accent6, HEX.accent1], showLegend: true, legendPos: "r", legendFontSize: 12, legendFontFace: "+mn-lt",
@@ -264,8 +264,8 @@ s.addChart(pres.charts.BAR, [
   valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" },
   showTitle: true, title: "WARN eredmények CIS fejezetenként", titleFontSize: 13, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
 });
-text(s, "cmp-note", "Host: az auditd a WSL2 kernelen nem támogatott, és a v1 1.1.1-es PASS eredménye hamisnak bizonyult", { x: 0.5, y: 4.8, w: 8.4, h: 0.3, fontSize: 11, color: C.accent6 });
-s.addNotes("9 megállapítás teljesen, 1 részben javult. A host fejezet WARN-jai nem csökkentek: a WSL2 kernel nem támogatja az auditd-t (M-01), és kiderült, hogy a v1 1.1.1-es PASS eredménye hamis volt. A Trivy szerint 91%-kal csökkent a magas és kritikus sérülékenységek száma. A maradék 41 mindegyikéhez van javított verzió, ezekre új akciótervi pont készült.");
+text(s, "cmp-note", "Maradék 4 WARN: partíció, authorization, content trust (felvállalva), 1 szükséges proxy port", { x: 0.5, y: 4.8, w: 8.4, h: 0.3, fontSize: 11, color: C.accent6 });
+s.addNotes("10 megállapítás teljesen, 1 részben javult, 2 kockázatot tudatosan felvállaltunk. A host fejezetben az auditd szabályok 8 WARN-t szüntettek meg. A Trivy szerint 91%-kal csökkent a magas és kritikus sérülékenységek száma. A maradék 41 mindegyikéhez van javított verzió, ezekre új akciótervi pont készült.");
 
 // ---- 10. Tanulságok ------------------------------------------------------------------------
 s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Eredmények" });
@@ -274,18 +274,16 @@ text(s, "l-h", "Az eszköz kimenete nem bizonyíték", { x: 0.5, y: 1.25, w: 4.3
 text(s, "l-b", [
   { text: "dash alatt hamis WARN (2.2, 2.9): bash-szintaxis sh-ban", options: { bullet: true, breakLine: true } },
   { text: "restart: always mégis PASS (5.15)", options: { bullet: true, breakLine: true } },
-  { text: "hamis PASS a partícióra: a dockerd bind-mountja (1.1.1)", options: { bullet: true, breakLine: true } },
-  { text: "SELinux PASS csak formálisan (5.3)", options: { bullet: true } },
+  { text: "SELinux: v1-ben hamis WARN, v2-ben csak formális PASS (5.3)", options: { bullet: true } },
 ], { x: 0.5, y: 1.75, w: 4.3, h: 2.4, fontSize: 14, color: C.background1, paraSpaceAfter: 8, valign: "top" });
 text(s, "r-h", "Következő lépések", { x: 5.2, y: 1.25, w: 4.3, h: 0.4, fontSize: 18, bold: true, color: C.accent1 });
 text(s, "r-b", [
   { text: "Maradék CVE-k javítása (apk, gosu, pip)", options: { bullet: true, breakLine: true } },
-  { text: "Valódi Linux VM: auditd, AppArmor (M-01, M-12)", options: { bullet: true, breakLine: true } },
   { text: "Heti Trivy szkennelés CI-ban (CIS 4.4)", options: { bullet: true, breakLine: true } },
   { text: "Távoli naplógyűjtés (CIS 2.13)", options: { bullet: true } },
 ], { x: 5.2, y: 1.75, w: 4.3, h: 2.4, fontSize: 14, color: C.background1, paraSpaceAfter: 8, valign: "top" });
-text(s, "concl", "A tutorial-szintű Docker telepítés kritikus kockázatot hordoz, de néhány sor konfigurációval az alkalmazás módosítása nélkül javítható.", { x: 0.5, y: 4.3, w: 9.0, h: 0.6, fontSize: 14, italic: true, color: C.background2 });
-s.addNotes("A legfontosabb módszertani tanulság: az automatizált eszköz öt ellenőrzésnél tévedett. Ezeket a forráskód elemzésével igazoltuk, és minden megállapítást független bizonyítékkal is alátámasztottunk. A fennmaradó kockázatok kezelésére új akciótervet javasoltunk. Kérdések?");
+text(s, "concl", "Az alapbeállításokkal telepített Docker környezet kritikus kockázatot hordoz, de néhány sor konfigurációval az alkalmazás módosítása nélkül javítható.", { x: 0.5, y: 4.3, w: 9.0, h: 0.6, fontSize: 14, italic: true, color: C.background2 });
+s.addNotes("A legfontosabb módszertani tanulság: az automatizált eszköz négy ellenőrzésnél tévedett. Ezeket a forráskód elemzésével igazoltuk, és minden megállapítást független bizonyítékkal is alátámasztottunk. A fennmaradó kockázatok kezelésére új akciótervet javasoltunk. Kérdések?");
 
 (async () => {
   await pres.writeFile({ fileName: OUT });

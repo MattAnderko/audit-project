@@ -21,7 +21,7 @@
 
 ## Host
 
-- **Valódi Linux VM** (VirtualBox, Hyper-V vagy felhő), nem Docker Desktop és nem WSL. A CIS 1–3. fejezet (host, daemon, daemon-fájlok) ellenőrzései csak így adnak értelmes eredményt.
+- **Valódi Linux host** (natív telepítés vagy VM), nem Docker Desktop vagy más, virtuális gépbe zárt Docker-környezet. A CIS 1–3. fejezet (host, daemon, daemon-fájlok) ellenőrzései csak így adnak értelmes eredményt.
 - Ubuntu Server LTS, Docker Engine a hivatalos Docker apt repóból (`docker-ce`), Compose v2 plugin.
 - Az auditor kap egy saját, sudo jogú felhasználót.
 
@@ -37,9 +37,9 @@ Az alkalmazás biztonsága **nem** tárgya az auditnak, a futtatókörnyezete vi
 
 ## v1 – „naiv” kiinduló telepítés (`infra/v1/`)
 
-A cél egy **tipikus, alapbeállításokkal összerakott** környezet, ahogy egy átlagos tutorial alapján készülne. Ne legyen mesterségesen elrontva. Ami „magától” így lesz, az maradjon így:
+A cél egy **alapbeállításokkal összerakott** környezet: a Docker alapértelmezései és a hivatalos image-dokumentációk példái szerint, mesterséges elrontás nélkül. Ami „magától” így lesz, az maradjon így (az egyes beállítások forrásai: `docs/jelentes.md`, 3.1 fejezet):
 
-| Jellemző | Tipikus v1 állapot |
+| Jellemző | v1 állapot |
 |---|---|
 | Alap image | `python:latest` / `node:latest`, `postgres:latest`, `nginx:latest` |
 | Felhasználó | nincs `USER` a Dockerfile-ban, a konténer rootként fut |
