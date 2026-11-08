@@ -47,7 +47,7 @@ pptk/                        Az előadások anyaga (referencia)
 
 Az audit elkészült (2026-11-08):
 
-- Leadandó dokumentáció: [docs/jelentes.docx](docs/jelentes.docx) (14 oldal; forrás: [docs/jelentes.md](docs/jelentes.md))
+- Leadandó dokumentáció: [docs/jelentes.docx](docs/jelentes.docx) (13 oldal; forrás: [docs/jelentes.md](docs/jelentes.md))
 - Prezentáció: [docs/prezentacio.pptx](docs/prezentacio.pptx) (10 dia, előadói jegyzetekkel)
 - Interaktív áttekintés: [docs/attekintes.html](docs/attekintes.html) (böngészőben megnyitható)
 - Bizonyítékok: `evidence/2026-11-08T1402Z_v1` (v1), `evidence/2026-11-08T1514Z_v2` (v2, elsődleges), `evidence/2026-11-08T1516Z_v2-functional` (v2 funkcionális teszt), `evidence/2026-11-08T1406Z_v2` és `T1409Z_v2-functional` (köztes v2 mérés, értékelésre nem használtuk), `evidence/2026-11-08T1424Z_v2-dash` (a docker-bench dash-hibájának bizonyítéka)

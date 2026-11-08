@@ -28,7 +28,7 @@ Főbb eredmények:
 
 # 2. Audit terv
 
-A terv az előadásokon bemutatott audit terv elemeit követi (cél, tárgy, vizsgálati alap, auditorok, résztvevők, előzetes információk, módszertan, időbeosztás). Ez a fejezet a lényeges elemeket foglalja össze, a teljes, önálló terv a `docs/audit-terv.md` fájlban van.
+A terv az előadásokon bemutatott audit terv elemeit követi (cél, tárgy, vizsgálati alap, auditorok, résztvevők, előzetes információk, módszertan, időbeosztás). Ez a fejezet a terv lényeges elemeit foglalja össze.
 
 ## 2.1 Az audit célja és típusa
 
@@ -68,7 +68,7 @@ Elsődleges mérce a CIS Docker Benchmark v1.6.0. Ezt a verziót implementálja 
 | Vezető auditor | Anderko Máté | tervezés, bizonyítékgyűjtés és -kezelés, értékelés, jelentés |
 | Auditált fél / rendszergazda | _TBD_ | hozzáférés, dokumentáció átadása, javítások végrehajtása |
 
-**Függetlenség:** az auditor saját munkáját nem vizsgálja. Mivel azonban oktatási projektről van szó, a két fél egy csapat tagja, ezért a függetlenség korlátozott (lásd 8. fejezet). **Titoktartás:** a jelszavak a bizonyítékokban maszkolva szerepelnek, a v2 titkai pedig nem kerültek a repóba.
+**Függetlenség:** az auditor saját munkáját nem vizsgálja. Mivel azonban oktatási projektről van szó, a két fél egy csapat tagja, ezért a függetlenség korlátozott (lásd 8. fejezet). **Titoktartás:** a jelszavak a bizonyítékokban maszkolva szerepelnek, a v2 titkai pedig nem kerültek verziókezelésbe.
 
 **A vizsgált fél kötelezettségei:** sudo jogú hozzáférés biztosítása, a konfigurációs fájlok átadása, valamint a konfiguráció változatlanul hagyása a két mérési pont között. A javítás csak a köztes jelentés után kezdődhetett.
 
@@ -76,11 +76,11 @@ Elsődleges mérce a CIS Docker Benchmark v1.6.0. Ezt a verziót implementálja 
 
 | Módszer | Alkalmazás | Bizonyíték |
 |---|---|---|
-| Dokumentumvizsgálat | Dockerfile, compose.yaml, daemon.json, systemd unitok, auditd szabályok | `config/` másolatok |
-| Megfigyelés | `docker inspect`, `docker ps`, hálózatok, mount-pontok | `docker/` kimenetek |
-| Automatizált tesztelés | docker-bench-security (CIS 1-7.), Trivy image és config | `docker-bench/`, `trivy/` |
+| Dokumentumvizsgálat | Dockerfile, compose.yaml, daemon.json, systemd unitok, auditd szabályok | a fájlok mérésenkénti másolata |
+| Megfigyelés | `docker inspect`, `docker ps`, hálózatok, mount-pontok | parancskimenetek |
+| Automatizált tesztelés | docker-bench-security (CIS 1-7.), Trivy image és config | nyers eszközkimenetek (log, JSON) |
 | Manuális ellenőrzés | Minden WARN és PASS eredmény szúrópróbás ellenőrzése, eszköz-forráskód vizsgálata | elemzés (5.1-5.2 fejezet) |
-| Újrateljesítés | Ugyanazon mérés megismétlése a javítások után, funkcionális teszt | v2 mérés, `v2-functional` |
+| Újrateljesítés | Ugyanazon mérés megismétlése a javítások után, funkcionális teszt | v2 mérés, funkcionális teszt |
 
 **Kockázatértékelés:** a kockázat a hatás és a bekövetkezési valószínűség függvénye, háromszintű skálán. A hatás a bizalmasság, a sértetlenség és a rendelkezésre állás sérülését jelenti, a valószínűség a kihasználhatóságot (hálózati elérhetőség, előfeltételek). A kezelési módok: javítás, felvállalás vagy áthárítás.
 
@@ -94,12 +94,12 @@ Elsődleges mérce a CIS Docker Benchmark v1.6.0. Ezt a verziót implementálja 
 
 | Fázis | Tevékenység | Eredmény |
 |---|---|---|
-| Tervezés | Audit terv, tárgy és kizárások rögzítése | `docs/audit-terv.md` |
-| Előkészítés | Host és v1 környezet telepítése (`scripts/setup-host.sh`, `infra/v1`) | futó v1 |
-| Lebonyolítás I. | Első mérés, dokumentumvizsgálat | `evidence/2026-11-08T1402Z_v1` |
+| Tervezés | Audit terv, tárgy és kizárások rögzítése | audit terv |
+| Előkészítés | Host és v1 környezet telepítése | futó v1 környezet |
+| Lebonyolítás I. | Első mérés, dokumentumvizsgálat | v1 mérés (2026-11-08 14:02 UTC) |
 | Értékelés | Megállapítások, kockázatértékelés, akcióterv | 6. fejezet |
-| Javítás | v2 környezet (`scripts/deploy-v2.sh`, `infra/v2`) | futó v2 |
-| Utókövetés | Újramérés, funkcionális teszt, összehasonlítás | `evidence/2026-11-08T1514Z_v2` |
+| Javítás | v2 környezet telepítése az akcióterv alapján | futó v2 környezet |
+| Utókövetés | Újramérés, funkcionális teszt, összehasonlítás | v2 mérés (2026-11-08 15:14 UTC) |
 | Jelentés | Jelen dokumentum, prezentáció | - |
 
 # 3. A vizsgált rendszer
@@ -135,7 +135,7 @@ A v1 környezetet szándékosan nem rontottuk el: a Docker alapértelmezéseit h
 | Nem rögzített `latest` image | Tag nélkül a Docker a `latest` taget használja [5]. A tagek módosíthatók, ugyanazt az image-et csak a digest szerinti rögzítés garantálja [4]. | Shu et al. vizsgálatában a hivatalos és a közösségi image-ek több mint 80%-ában volt legalább egy magas súlyosságú sérülékenység [10]. A Sysdig 2022-es jelentése szerint az image-ek 75%-a tartalmaz javítható magas vagy kritikus sérülékenységet [9]. |
 | Root futtatás (nincs `USER`) | A Docker ajánlása szerint a jogosultság nélkül is futtatható szolgáltatásnál a `USER` utasítással nem root felhasználóra kell váltani [4]. `USER` nélkül a v1 konténerei rootként futottak (4.3 fejezet). | A Sysdig 2022-es jelentése szerint a konténerek 76%-a rootként fut [9]. |
 | Jelszó környezeti változóban | A hivatalos postgres példa a jelszót a `POSTGRES_PASSWORD` változóban adja meg [8]. A Docker dokumentációja szerint az így átadott jelszó véletlenül kiszivároghat, mert minden folyamat eléri, és naplókba is kerülhet [6]. | Dahlmanns et al. a Docker Hubról és privát registry-kből vizsgált image-ek 8,5%-ában talált titkot (Docker Hub: 9,0%) [11]. |
-| Port publikálása minden interfészen | Host IP nélkül a Docker minden címen (`0.0.0.0`, `[::]`) publikálja a portot, amit a dokumentáció alapból nem biztonságosnak nevez [1]. A publikált port forgalma a ufw szabályait is megkerüli [2]. | A db port publikálása a v1-ben kényelmi okból történt (`infra/README.md`). A hivatalos postgres példa nem publikálja. Elterjedtségére nincs hivatkozott felmérés. |
+| Port publikálása minden interfészen | Host IP nélkül a Docker minden címen (`0.0.0.0`, `[::]`) publikálja a portot, amit a dokumentáció alapból nem biztonságosnak nevez [1]. A publikált port forgalma a ufw szabályait is megkerüli [2]. | A db port publikálása a v1-ben a környezet specifikációja szerint kényelmi okból történt. A hivatalos postgres példa nem publikálja. Elterjedtségére nincs hivatkozott felmérés. |
 | Nincs erőforrás-korlát | Alapértelmezés szerint a konténernek nincs erőforrás-korlátja [3]. | Nincs hivatkozott felmérés. |
 | `restart: always` | Az alapértelmezett policy a `no` [7]. Az `always` a hivatalos postgres példából származik [8]. | Nincs hivatkozott felmérés. |
 | Nincs `daemon.json` | A fájl hiányában minden daemon-beállítás alapértelmezett, ezt a v1 mérés is mutatja (4.3 fejezet). | Nincs hivatkozott felmérés. |
@@ -144,18 +144,14 @@ A v1 környezetet szándékosan nem rontottuk el: a Docker alapértelmezéseit h
 
 ## 4.1 Bizonyítékkezelés
 
-A bizonyítékokat a `scripts/collect-evidence.sh` szkript gyűjtötte, mérésenként külön, időbélyeggel ellátott könyvtárba (`evidence/<UTC időbélyeg>_<címke>/`). Meglévő mérést a szkript nem ír felül. Minden mérés tartalmaz egy `SHA256SUMS` fájlt, valamint egy mérési naplót (`meta/run.log`) a futtatott parancsokkal és hibákkal. A `docker inspect` kimenetben a jelszó-jellegű környezeti változók értékét a szkript a hash készítése előtt maszkolta. A nyers kimeneteket nem módosítottuk, az elemzést külön végeztük (`scripts/summarize.py`). A bizonyítékok integritása így ellenőrizhető:
+A bizonyítékokat egy saját gyűjtőszkript rögzítette, mérésenként külön, időbélyeggel ellátott könyvtárba. Meglévő mérést a szkript nem ír felül. Egy mérés tartalmazza a host és az eszközök verzióit, a konfigurációs fájlok másolatát, a `docker inspect` és `docker ps` kimeneteit, a docker-bench és a Trivy nyers kimenetét, valamint egy mérési naplót a futtatott parancsokkal és hibákkal. Minden fájlról SHA-256 hash készült, így az utólagos módosítás kimutatható (`sha256sum -c`). A `docker inspect` kimenetben a jelszó-jellegű környezeti változók értékét a szkript a hash készítése előtt maszkolta. A nyers kimeneteket nem módosítottuk, az összesítés és az elemzés külön készült.
 
-`cd evidence/<mérés> && sha256sum -c SHA256SUMS`
-
-| Mérés | Tartalom | Megjegyzés |
+| Mérés | Időpont (UTC) | Szerep |
 |---|---|---|
-| `2026-11-08T1402Z_v1` | Kiinduló állapot | elsődleges bizonyíték (v1) |
-| `2026-11-08T1406Z_v2` | köztes v2 mérés, az M-04 akciótervéből még nem minden lépés volt végrehajtva | értékelésre nem használtuk |
-| `2026-11-08T1409Z_v2-functional` | funkcionális teszt a köztes v2-n | értékelésre nem használtuk |
-| `2026-11-08T1424Z_v2-dash` | v2, docker-bench `dash` alatt | eszközhiba bizonyítéka (5.2 fejezet, T-1), értékelésre nem használtuk |
-| `2026-11-08T1514Z_v2` | v2, az akcióterv végrehajtása után | elsődleges bizonyíték (v2) |
-| `2026-11-08T1516Z_v2-functional` | v2 funkcionális és izolációs teszt (`scripts/functional-test.sh`) | kiegészítő bizonyíték (4.4 fejezet) |
+| v1 | 2026-11-08 14:02 | kiinduló állapot, elsődleges bizonyíték |
+| v2 | 2026-11-08 15:14 | utókövetés az akcióterv végrehajtása után, elsődleges bizonyíték |
+| v2 funkcionális teszt | 2026-11-08 15:16 | kiegészítő bizonyíték (4.4 fejezet) |
+| v2, docker-bench `dash` alatt | 2026-11-08 14:24 | a T-1 eszközhiba igazolása (5.2 fejezet), értékelésre nem használtuk |
 
 ## 4.2 CIS Docker Benchmark: eredmények fejezetenként
 
@@ -172,15 +168,15 @@ A docker-bench 117 ellenőrzést futtatott. Az *INFO* és *NOTE* eredmények man
 | **Összesen (1-6.)** | **34** | **29** | **66** | **4** |
 | docker-bench score | **5** | | **61** | |
 
-A v2 oszlopok a `2026-11-08T1514Z_v2` mérésből származnak. A 7. fejezet (Swarm) 9 ellenőrzése N/A, ezért kihagytuk. Az INFO eredmények egy része olyan fájlokra vonatkozik, amelyek ezen a disztribúción nem léteznek (pl. `/etc/default/docker`, `/etc/sysconfig/docker`). A 3. fejezet PASS-ainak növekedése (8 → 12) abból ered, hogy a v2-ben létrejött az `/etc/docker` könyvtár és a `daemon.json`, így azok jogosultságai is ellenőrizhetővé váltak.
+A 7. fejezet (Swarm) 9 ellenőrzése N/A, ezért kihagytuk. Az INFO eredmények egy része olyan fájlokra vonatkozik, amelyek ezen a disztribúción nem léteznek (pl. `/etc/default/docker`, `/etc/sysconfig/docker`). A 3. fejezet PASS-ainak növekedése (8 → 12) abból ered, hogy a v2-ben létrejött az `/etc/docker` könyvtár és a `daemon.json`, így azok jogosultságai is ellenőrizhetővé váltak.
 
 ## 4.3 A v1 mérés főbb bizonyítékai
 
 **Root futtatás (CIS 4.1):** a docker-bench szerint `running as root: booking-proxy-1 booking-app-1 booking-db-1`. A `docker inspect` kimenetben mindhárom konténernél `Config.User = ""`. A Trivy config szkennelése is jelzi: *DS-0002 (HIGH): Specify at least 1 USER command in Dockerfile*.
 
-**Nyílt titkok (CIS 4.10):** a `config/compose/compose.yaml` másolatában a jelszavak nyílt szövegként szerepelnek (`POSTGRES_PASSWORD`, `DATABASE_URL`, `ADMIN_PASSWORD`). A `docker inspect` kimenetben ugyanezek a változók megjelennek (a bizonyítékban maszkolva: `***MASKED***`). Így bárki, akinek Docker API hozzáférése van, kiolvashatja őket.
+**Nyílt titkok (CIS 4.10):** a compose fájl mérés közben rögzített másolatában a jelszavak nyílt szövegként szerepelnek (`POSTGRES_PASSWORD`, `DATABASE_URL`, `ADMIN_PASSWORD`). A `docker inspect` kimenetben ugyanezek a változók megjelennek (a bizonyítékban maszkolva: `***MASKED***`). Így bárki, akinek Docker API hozzáférése van, kiolvashatja őket.
 
-**Publikált portok (CIS 5.9, 5.14):** a docker-bench kimenete `Containers with open ports: booking-proxy-1:80 booking-app-1:8000 booking-db-1:5432` és `port bound to wildcard IP: ...:0.0.0.0`, a `docker/ps.txt` pedig `0.0.0.0:5432->5432/tcp` bejegyzést mutat.
+**Publikált portok (CIS 5.9, 5.14):** a docker-bench kimenete `Containers with open ports: booking-proxy-1:80 booking-app-1:8000 booking-db-1:5432` és `port bound to wildcard IP: ...:0.0.0.0`, a `docker ps` kimenete pedig `0.0.0.0:5432->5432/tcp` bejegyzést mutat.
 
 **Runtime korlátozások hiánya (CIS 5.11-5.13, 5.26, 5.29):** mindhárom konténer memória-, CPU- és PID-korlát nélkül, írható root fájlrendszerrel és `no-new-privileges` nélkül futott.
 
@@ -211,7 +207,7 @@ A v2 image-ek rögzített, Alpine alapú image-ekre épülnek. Az image-cseréve
 
 - **db:** a `gosu` törlése. Az entrypoint csak root futtatáskor hívja, ez a konténer pedig eleve `postgres` felhasználóval indul.
 - **app:** a pip eltávolítása a függőségek telepítése után. A pip csak a buildhez kell.
-- **proxy:** `apk upgrade` a build során, az Alpine biztonsági javításaival. A build idejére a felhasználó rootra vált, a konténer továbbra is a 101-es felhasználóval fut. Ennek ára, hogy az image tartalma a build időpontjától is függ. A ténylegesen mért image digestje a bizonyítékban rögzített (`docker/images.txt`), a rendszeres újraépítést pedig az A-1 akciótervi pont kezeli.
+- **proxy:** `apk upgrade` a build során, az Alpine biztonsági javításaival. A build idejére a felhasználó rootra vált, a konténer továbbra is a 101-es felhasználóval fut. Ennek ára, hogy az image tartalma a build időpontjától is függ. A ténylegesen mért image digestje a mérési bizonyítékban rögzített, a rendszeres újraépítést pedig az A-1 akciótervi pont kezeli.
 
 | Image (v2) | Alap OS | CRITICAL | HIGH | MEDIUM | LOW |
 |---|---|---|---|---|---|
@@ -221,9 +217,9 @@ A v2 image-ek rögzített, Alpine alapú image-ekre épülnek. Az image-cseréve
 
 A Trivy config szkennelése a v2 Dockerfile-okban 0 hibát talált (v1: 3). Az `auditctl -l` a v2-ben 12 Docker-szabályt mutat. A 13. szabály (`/etc/containerd/config.toml`) nem töltődött be, mert a fájl ezen a hoston nem létezik, az 1.1.12 ellenőrzés ezért INFO. A daemon a `userns-remap` miatt külön tárolót használ (`/var/lib/docker/100000.100000`).
 
-A funkcionális teszt (`2026-11-08T1516Z_v2-functional`) szerint a v2 stack működik: a főoldal HTTP 200, a foglalás 302, az admin nézet hitelesítés nélkül és a régi jelszóval 401, a generált secrettel 200. A host hálózati címén a 80, 8000, 5432 és 8080 port zárt. Az app konténerben `uid=10001(app)`, ami a hoston a 110001-es UID-nak felel meg (userns-remap). A root fájlrendszer írása `Read-only file system` hibát ad, a környezeti változók között jelszó nincs, csak a `*_FILE` hivatkozások.
+A funkcionális teszt (2026-11-08 15:16 UTC) szerint a v2 stack működik: a főoldal HTTP 200, a foglalás 302, az admin nézet hitelesítés nélkül és a régi jelszóval 401, a generált secrettel 200. A host hálózati címén a 80, 8000, 5432 és 8080 port zárt. Az app konténerben `uid=10001(app)`, ami a hoston a 110001-es UID-nak felel meg (userns-remap). A root fájlrendszer írása `Read-only file system` hibát ad, a környezeti változók között jelszó nincs, csak a `*_FILE` hivatkozások.
 
-**Megfigyelés (telepítési szkript):** a v2 újratelepítésekor az app nem indult el, mert az adatbázis elutasította a jelszavát. Az ok: a `deploy-v2.sh` újratelepítéskor törölte a célkönyvtárat a titkokkal együtt, és új jelszót generált, a meglévő adatbázis-volume viszont az első inicializáláskor beállított jelszót őrizte. A szkript azóta a titkokat külön, megmaradó könyvtárban tárolja (`/opt/booking/secrets`), az adatbázis-felhasználó jelszavát pedig a meglévő titokhoz igazítottuk. Az első telepítés üres volume-ra történt, ezért a hiba ott nem jelentkezett.
+**Megfigyelés (telepítési szkript):** a v2 újratelepítésekor az app nem indult el, mert az adatbázis elutasította a jelszavát. Az ok: a telepítő szkript újratelepítéskor törölte a célkönyvtárat a titkokkal együtt, és új jelszót generált, a meglévő adatbázis-volume viszont az első inicializáláskor beállított jelszót őrizte. A szkript azóta a titkokat külön, újratelepítéskor megmaradó könyvtárban tárolja, az adatbázis-felhasználó jelszavát pedig a meglévő titokhoz igazítottuk. Az első telepítés üres volume-ra történt, ezért a hiba ott nem jelentkezett.
 
 # 5. Elemzés
 
@@ -250,7 +246,7 @@ Minden WARN eredményt összevetettünk a `docker inspect`, a konfigurációs f�
 | T-2 | 5.15 Restart policy | PASS (v1) | `restart: always`, nem felel meg | Az ellenőrzés csak `MaximumRetryCount > 5` esetén jelez. Az `always` policy értéke 0, ezért átmegy. **Hamis negatív.** |
 | T-3 | 5.3 SELinux | WARN (v1), PASS (v2) | A hoston SELinux nincs, az LSM az AppArmor, így az ajánlás egyik változatra sem alkalmazható | Az ellenőrzés csak azt nézi, hogy a `SecurityOpt` nem üres. A v1-ben üres (**hamis pozitív**), a v2-ben a `no-new-privileges` kitölti (**formális megfelelés**). |
 
-A T-1 miatt a gyűjtőszkript a docker-bench-et `bash`-sel futtatja (a futtató shell a `DOCKER_BENCH_SHELL` változóval állítható), az elsődleges v1 és v2 mérés így készült. A hibát egy külön, `dash` alatti v2 méréssel igazoltuk.
+A T-1 miatt a docker-bench-et `bash`-sel futtattuk, az elsődleges v1 és v2 mérés így készült. A hibát egy külön, `dash` alatt futtatott v2 méréssel igazoltuk.
 
 ## 5.3 Következtetés az eszközről
 
@@ -311,7 +307,7 @@ Az eszköz kimenete gyors és jól megismételhető, de önmagában nem bizonyí
 | M-03 | Docker secret, `*_FILE` változók, telepítéskor generált titkok | preventív | javítás | NOTE | megfelel | Javítva |
 | M-04 | Digesttel rögzített alpine image-ek, gosu és pip eltávolítva, Alpine csomagfrissítés a buildben, Trivy szkennelés | preventív | javítás | 454 H+C | 0 H+C | Javítva |
 | M-10 | `daemon.json`: icc, userns-remap, live-restore, userland-proxy, no-new-privileges, journald | preventív | javítás | 7 WARN | PASS | Javítva (2.13 részben) |
-| M-01 | auditd szabályok (`docker.rules`), 12 szabály betöltve | felismerő | javítás | WARN | PASS | Javítva |
+| M-01 | auditd szabályok a Docker binárisaira és fájljaira, 12 szabály betöltve | felismerő | javítás | WARN | PASS | Javítva |
 | M-06 | `mem_limit`, `cpu_shares`, `pids_limit` | preventív | javítás | WARN | PASS | Javítva |
 | M-07 | `read_only: true` + tmpfs | preventív | javítás | WARN | PASS | Javítva |
 | M-08 | `cap_drop: ALL`, `no-new-privileges` | preventív | javítás | WARN | PASS | Javítva |
@@ -354,7 +350,7 @@ A v2-ben maradt 4 WARN: 1.1.1 a külön partíció (M-12), 2.12 és 4.5 az autho
 - A vizsgált host egy natív Linuxot (Manjaro) futtató, egyfelhasználós munkaállomás, nem dedikált szerver. Az AppArmort a host előkészítésekor kapcsoltuk be (Manjaron alapból nem aktív, Ubuntun igen), ezért a CIS 5.2 már a v1-ben teljesült.
 - Az audit két időpontra vonatkozó pillanatkép, a kontrollok működésének hatékonyságát egy időszakon át nem vizsgálta.
 - Oktatási projekt lévén az auditor és az auditált fél egy csapat tagja, így a függetlenség korlátozott.
-- Az interjú jegyzőkönyv sablonja elkészült (`docs/templates/interju-jegyzokonyv.md`), de a rendszergazdai szerepet a csapat töltötte be, ezért az interjús kérdéseket dokumentumvizsgálattal és technikai megfigyeléssel váltottuk ki.
+- Az interjú jegyzőkönyv sablonja elkészült, de a rendszergazdai szerepet a csapat töltötte be, ezért az interjús kérdéseket dokumentumvizsgálattal és technikai megfigyeléssel váltottuk ki.
 - Az automatizált ellenőrzések lefedettsége és pontossága korlátozott (5.2 fejezet), a manuális ajánlások értékelése pedig az auditor szakmai megítélésén alapul.
 - Az alkalmazás forráskódjának biztonsága nem volt része a vizsgálatnak.
 - A v1-ben az adatbázis portjának publikálása kényelmi döntés volt, nem alapértelmezés, és a hivatalos postgres példa sem így teszi (3.1 fejezet). Az egyetlen kritikus megállapítás (M-05) súlyossága ezért részben ebből a döntésből ered.
@@ -376,18 +372,3 @@ A webes források elérésének dátuma: 2026-11-08.
 - [9] Sysdig: Sysdig Usage and Security Report Finds More than 75% of Running Containers Have High-Risk Vulnerabilities. Sajtóközlemény a Sysdig 2022 Cloud-Native Security and Usage Reportról, 2022. január 26. `https://sysdig.com/press-releases/sysdig-usage-and-security-report-finds-more-than-75-of-running-containers-have-high-risk-vulnerabilities`
 - [10] R. Shu, X. Gu, W. Enck: A Study of Security Vulnerabilities on Docker Hub. CODASPY '17, ACM, 2017. DOI: 10.1145/3029806.3029832
 - [11] M. Dahlmanns, C. Sander, R. Decker, K. Wehrle: Secrets Revealed in Container Images: An Internet-wide Study on Occurrence and Impact. ASIA CCS '23, ACM, 2023, 797-811. DOI: 10.1145/3579856.3590329
-
-# Melléklet: hivatkozott fájlok
-
-| Fájl | Tartalom |
-|---|---|
-| `docs/audit-terv.md` | Önálló audit terv |
-| `docs/attekintes.html` | Interaktív áttekintés a projektről (böngészőben nyitható) |
-| `infra/v1/`, `infra/v2/` | A vizsgált konfigurációk (compose, Dockerfile, daemon.json, auditd szabályok) |
-| `scripts/setup-host.sh` | A host előkészítése (v1), Ubuntu és Manjaro/Arch |
-| `scripts/enable-apparmor-grub.sh` | Az AppArmor bekapcsolása a kernel boot paramétereiben |
-| `scripts/deploy-v2.sh` | A v2 hardening telepítése (a titkokat újratelepítéskor megőrzi) |
-| `scripts/collect-evidence.sh` | Bizonyítékgyűjtés (docker-bench, Trivy, konfigurációk, SHA-256) |
-| `scripts/functional-test.sh` | A v2 funkcionális és izolációs tesztje |
-| `scripts/summarize.py` | Eredmények összesítése és összehasonlítása |
-| `evidence/*/` | Nyers bizonyítékok, `SHA256SUMS`, mérési napló |

@@ -129,10 +129,10 @@ s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Audit" });
 s.addText("Az audit menete", { placeholder: "title" });
 const steps = [
   ["Terv", "cél, tárgy, kizárások, kockázati módszer"],
-  ["v1 telepítés", "setup-host.sh, infra/v1"],
-  ["Mérés", "collect-evidence.sh: docker-bench, Trivy, SHA-256"],
+  ["v1 telepítés", "alapbeállítások, hivatalos image-példák"],
+  ["Mérés", "docker-bench, Trivy, SHA-256 hash"],
   ["Értékelés", "13 megállapítás, kockázat, CSF"],
-  ["Javítás", "deploy-v2.sh, infra/v2"],
+  ["Javítás", "v2 az akcióterv alapján"],
   ["Újramérés", "utókövetés, összehasonlítás"],
 ];
 s.addShape(pres.shapes.LINE, { objectName: "timeline", x: 0.95, y: 2.0, w: 8.1, h: 0, line: { color: C.accent6, width: 1.5 } });
@@ -145,7 +145,7 @@ steps.forEach(([h, b], i) => {
 card(s, "evid", 0.5, 4.1, 9.0, 0.8, C.background2);
 text(s, "evid-t", [
   { text: "Bizonyítékkezelés: ", options: { bold: true } },
-  { text: "mérésenként időbélyeges könyvtár, nyers kimenetek, SHA256SUMS, mérési napló, maszkolt jelszavak, git commit" },
+  { text: "mérésenként időbélyeges könyvtár, nyers kimenetek, SHA-256 hash, mérési napló, maszkolt jelszavak, verziókezelés" },
 ], { x: 0.75, y: 4.1, w: 8.5, h: 0.8, fontSize: 14, color: C.text1, valign: "middle" });
 s.addNotes("A folyamat az előadások audit munkafolyamatát követi: tervezés, bizonyítékgyűjtés, értékelés, jelentés, utókövetés. A bizonyítékgyűjtést egyetlen szkript végzi, ezért a mérés megismételhető. Minden fájlnak SHA-256 hash-e van, a nyers kimeneteket nem módosítjuk.");
 
@@ -242,7 +242,7 @@ text(s, "fix-note", [
   { text: "Az alkalmazás kódja nem változott ", options: { bold: true } },
   { text: "– minden javítás a compose fájlban, a Dockerfile-okban és a daemon.json-ban történt." },
 ], { x: 0.5, y: 4.5, w: 9.0, h: 0.45, fontSize: 13, color: C.text2 });
-s.addNotes("A javítások nagy része néhány sor a compose fájlban és a Dockerfile-okban. A titkok a v2-ben telepítéskor generálódnak, és nem kerülnek a git repóba. A host-auditáláshoz auditd szabályokat telepítettünk (M-01). A userns-remap miatt a konténerbeli felhasználók a hoston nem privilegizált UID-okra képződnek le: az app 10001-es UID-ja a hoston 110001.");
+s.addNotes("A javítások nagy része néhány sor a compose fájlban és a Dockerfile-okban. A titkok a v2-ben telepítéskor generálódnak, és nem kerülnek verziókezelésbe. A host-auditáláshoz auditd szabályokat telepítettünk (M-01). A userns-remap miatt a konténerbeli felhasználók a hoston nem privilegizált UID-okra képződnek le: az app 10001-es UID-ja a hoston 110001.");
 
 // ---- 9. Előtte–utána ----------------------------------------------------------------------
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Eredmények" });
