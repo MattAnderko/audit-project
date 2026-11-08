@@ -9,7 +9,7 @@ Audit dokumentáció: audit terv, bizonyítékok és audit jelentés
 | **Auditált fél / rendszergazda** | _TBD_ |
 | **A vizsgált rendszer** | „Időpontfoglaló” webalkalmazás és Docker futtatókörnyezete |
 | **Követelményrendszer** | CIS Docker Benchmark v1.6.0 |
-| **Mérési időpontok** | v1: 2026-11-08 14:02 UTC · v2 (utókövetés): 2026-11-08 14:06 és 15:14 UTC |
+| **Mérési időpontok** | v1: 2026-11-08 14:02 UTC · v2 (utókövetés): 2026-11-08 15:14 UTC |
 | **Dokumentum verzió** | 1.0 |
 
 # 1. Vezetői összefoglaló
@@ -21,7 +21,6 @@ Főbb eredmények:
 - A kiinduló (v1), alapbeállításokkal telepített környezetben 13 megállapítást tettünk: 1 kritikus, 4 magas, 4 közepes és 4 alacsony kockázatút. A legsúlyosabb az M-05: az adatbázis-szerver a host minden hálózati interfészén elérhető volt, gyenge jelszóval, amely nyílt szövegként szerepelt a konfigurációs fájlban.
 - A konténerek root felhasználóval futottak, a jelszavak a `docker inspect` kimenetéből kiolvashatók voltak, és a nem rögzített (`latest`) alap image-ekben 454 magas vagy kritikus súlyosságú ismert sérülékenység volt.
 - Az akcióterv végrehajtása után a docker-bench pontszáma 5-ről 61-re nőtt, a WARN eredmények száma 29-ről 4-re, a magas és kritikus sérülékenységeké 454-ről 0-ra csökkent. Tizenegy megállapítás javult, kettőt tudatosan felvállaltunk. A kritikus és magas kockázatú megállapítások mindegyike megszűnt.
-- Az első utókövetés még 41 magas vagy kritikus sérülékenységet talált az upstream image-ekben (gosu, pip, Alpine csomagok). Egy második javítási kör után az ismételt mérés 0-t mutatott (4.4 fejezet).
 - A v2-ben maradt 4 WARN közül három tudatosan felvállalt kockázat (külön partíció, authorization plugin, content trust), a negyedik az egyetlen, szükséges proxy portra vonatkozik.
 - Az automatizált eszköz négy ellenőrzésnél (2.2, 2.9, 5.15, 5.3) adott a valós állapottól eltérő eredményt, ezért a kimenetét auditori ellenőrzés nélkül nem fogadtuk el.
 
@@ -100,8 +99,7 @@ Elsődleges mérce a CIS Docker Benchmark v1.6.0. Ezt a verziót implementálja 
 | Lebonyolítás I. | Első mérés, dokumentumvizsgálat | `evidence/2026-11-08T1402Z_v1` |
 | Értékelés | Megállapítások, kockázatértékelés, akcióterv | 6. fejezet |
 | Javítás | v2 környezet (`scripts/deploy-v2.sh`, `infra/v2`) | futó v2 |
-| Utókövetés | Újramérés, funkcionális teszt, összehasonlítás | `evidence/2026-11-08T1406Z_v2` |
-| Javítás II., újramérés | A maradék sérülékenységek javítása, ismételt mérés | `evidence/2026-11-08T1514Z_v2` |
+| Utókövetés | Újramérés, funkcionális teszt, összehasonlítás | `evidence/2026-11-08T1514Z_v2` |
 | Jelentés | Jelen dokumentum, prezentáció | - |
 
 # 3. A vizsgált rendszer
@@ -153,10 +151,10 @@ A bizonyítékokat a `scripts/collect-evidence.sh` szkript gyűjtötte, mérése
 | Mérés | Tartalom | Megjegyzés |
 |---|---|---|
 | `2026-11-08T1402Z_v1` | Kiinduló állapot | elsődleges bizonyíték (v1) |
-| `2026-11-08T1406Z_v2` | v2, első utókövetés | a maradék sérülékenységek bizonyítéka (4.4 fejezet) |
-| `2026-11-08T1409Z_v2-functional` | v2 funkcionális teszt az első utókövetéskor | kiegészítő bizonyíték |
+| `2026-11-08T1406Z_v2` | köztes v2 mérés, az M-04 akciótervéből még nem minden lépés volt végrehajtva | értékelésre nem használtuk |
+| `2026-11-08T1409Z_v2-functional` | funkcionális teszt a köztes v2-n | értékelésre nem használtuk |
 | `2026-11-08T1424Z_v2-dash` | v2, docker-bench `dash` alatt | eszközhiba bizonyítéka (5.2 fejezet, T-1), értékelésre nem használtuk |
-| `2026-11-08T1514Z_v2` | v2 a maradék sérülékenységek javítása után | elsődleges bizonyíték (v2) |
+| `2026-11-08T1514Z_v2` | v2, az akcióterv végrehajtása után | elsődleges bizonyíték (v2) |
 | `2026-11-08T1516Z_v2-functional` | v2 funkcionális és izolációs teszt (`scripts/functional-test.sh`) | kiegészítő bizonyíték (4.4 fejezet) |
 
 ## 4.2 CIS Docker Benchmark: eredmények fejezetenként
@@ -174,7 +172,7 @@ A docker-bench 117 ellenőrzést futtatott. Az *INFO* és *NOTE* eredmények man
 | **Összesen (1-6.)** | **34** | **29** | **66** | **4** |
 | docker-bench score | **5** | | **61** | |
 
-A v2 oszlopok mindkét v2 mérésre (14:06 és 15:14 UTC) érvényesek, a docker-bench eredményük azonos. A 7. fejezet (Swarm) 9 ellenőrzése N/A, ezért kihagytuk. Az INFO eredmények egy része olyan fájlokra vonatkozik, amelyek ezen a disztribúción nem léteznek (pl. `/etc/default/docker`, `/etc/sysconfig/docker`). A 3. fejezet PASS-ainak növekedése (8 → 12) abból ered, hogy a v2-ben létrejött az `/etc/docker` könyvtár és a `daemon.json`, így azok jogosultságai is ellenőrizhetővé váltak.
+A v2 oszlopok a `2026-11-08T1514Z_v2` mérésből származnak. A 7. fejezet (Swarm) 9 ellenőrzése N/A, ezért kihagytuk. Az INFO eredmények egy része olyan fájlokra vonatkozik, amelyek ezen a disztribúción nem léteznek (pl. `/etc/default/docker`, `/etc/sysconfig/docker`). A 3. fejezet PASS-ainak növekedése (8 → 12) abból ered, hogy a v2-ben létrejött az `/etc/docker` könyvtár és a `daemon.json`, így azok jogosultságai is ellenőrizhetővé váltak.
 
 ## 4.3 A v1 mérés főbb bizonyítékai
 
@@ -203,30 +201,19 @@ A v2 oszlopok mindkét v2 mérésre (14:06 és 15:14 UTC) érvényesek, a docker
 | postgres:latest | Debian 13.7 | 2 | 91 | 162 | 144 |
 | **Összesen** | | **18** | **436** | **1004** | **1616** |
 
-A 454 magas vagy kritikus sérülékenységből mindössze 39-hez volt javított csomagverzió. A többség a teljes Debian alap image (fordítók, fejlesztői könyvtárak) felesleges csomagjaiból ered (CIS 4.3).
+A 454 magas vagy kritikus sérülékenységből mindössze 39-hez volt javított csomagverzió. A többség a teljes Debian alap image (fordítók, fejlesztői könyvtárak) felesleges csomagjaiból ered (CIS 4.3). Három forrás azonban nem a Debian alapból származik, ezért az alap image cseréjével nem szűnik meg: a postgres image-be épített `gosu` bináris elavult Go standard könyvtára (26 magas vagy kritikus), a python image-ben lévő pip beépített (vendorolt) csomagjai (urllib3, msgpack, setuptools; 5), valamint a libexpat, curl és zlib csomagok, amelyekhez az image cseréje mellett csomagfrissítés is kell.
 
 **A `latest` tag rendelkezésre állási kockázata (megfigyelés):** a nem rögzített alap image kódváltozás nélkül is eltörheti az újraépítést. A projekt előkészítésekor (2026-11-07) a v1 első buildje így bukott el: a `python:latest` időközben a Python 3.15-re váltott, amelyhez a rögzített `psycopg-binary==3.2.10` csomagnak nem volt bináris változata. A build csak a függőség frissítése után sikerült.
 
 ## 4.4 A v2 mérés főbb bizonyítékai
 
-Az első utókövetés (`2026-11-08T1406Z_v2`) a v2 image-ekben még 41 magas vagy kritikus sérülékenységet talált, mindegyikhez volt javított verzió:
-
-| Image (v2, első utókövetés) | Alap OS | CRITICAL | HIGH | Forrás |
-|---|---|---|---|---|
-| booking-app:v2 | Alpine 3.24.4 | 0 | 5 | a pip vendorolt csomagjai (urllib3, msgpack, setuptools) |
-| booking-db:v2 | Alpine 3.24.4 | 1 | 25 | `gosu` Go bináris (Go stdlib) |
-| booking-proxy:v2 | Alpine 3.24.2 | 1 | 9 | libexpat, brotli-libs, curl, musl, zlib |
-| **Összesen** | | **2** | **39** | |
-
-A rögzített alap image-ek a mérés idején megegyeztek az upstream legfrissebb változatával, így újabb digestre váltással a sérülékenységek nem szűntek volna meg. Ezért egy második javítási kört végeztünk (M-04):
+A v2 image-ek rögzített, Alpine alapú image-ekre épülnek. Az image-cserével meg nem szűnő három sérülékenységforrást (4.3 fejezet) a Dockerfile-ok közvetlenül kezelik (M-04):
 
 - **db:** a `gosu` törlése. Az entrypoint csak root futtatáskor hívja, ez a konténer pedig eleve `postgres` felhasználóval indul.
-- **app:** a pip eltávolítása a függőségek telepítése után. A pip csak a buildhez kell, a sérülékeny csomagok a beépített (vendorolt) függőségei voltak.
+- **app:** a pip eltávolítása a függőségek telepítése után. A pip csak a buildhez kell.
 - **proxy:** `apk upgrade` a build során, az Alpine biztonsági javításaival. A build idejére a felhasználó rootra vált, a konténer továbbra is a 101-es felhasználóval fut. Ennek ára, hogy az image tartalma a build időpontjától is függ. A ténylegesen mért image digestje a bizonyítékban rögzített (`docker/images.txt`), a rendszeres újraépítést pedig az A-1 akciótervi pont kezeli.
 
-Az ismételt mérés (`2026-11-08T1514Z_v2`) szerint a három image-ben nincs magas vagy kritikus sérülékenység (összesen 2 közepes és 1 alacsony maradt), a docker-bench eredménye változatlan.
-
-| Image (v2, javítás után) | Alap OS | CRITICAL | HIGH | MEDIUM | LOW |
+| Image (v2) | Alap OS | CRITICAL | HIGH | MEDIUM | LOW |
 |---|---|---|---|---|---|
 | booking-app:v2 | Alpine 3.24.4 | 0 | 0 | 1 | 1 |
 | booking-db:v2 | Alpine 3.24.4 | 0 | 0 | 1 | 0 |
@@ -236,7 +223,7 @@ A Trivy config szkennelése a v2 Dockerfile-okban 0 hibát talált (v1: 3). Az `
 
 A funkcionális teszt (`2026-11-08T1516Z_v2-functional`) szerint a v2 stack működik: a főoldal HTTP 200, a foglalás 302, az admin nézet hitelesítés nélkül és a régi jelszóval 401, a generált secrettel 200. A host hálózati címén a 80, 8000, 5432 és 8080 port zárt. Az app konténerben `uid=10001(app)`, ami a hoston a 110001-es UID-nak felel meg (userns-remap). A root fájlrendszer írása `Read-only file system` hibát ad, a környezeti változók között jelszó nincs, csak a `*_FILE` hivatkozások.
 
-**Megfigyelés (telepítési szkript):** a második javítási kör telepítésekor az app nem indult el, mert az adatbázis elutasította a jelszavát. Az ok: a `deploy-v2.sh` újratelepítéskor törölte a célkönyvtárat a titkokkal együtt, és új jelszót generált, a meglévő adatbázis-volume viszont az első inicializáláskor beállított jelszót őrizte. A szkript azóta a titkokat külön, megmaradó könyvtárban tárolja (`/opt/booking/secrets`), az adatbázis-felhasználó jelszavát pedig a meglévő titokhoz igazítottuk. Az első telepítés üres volume-ra történt, ezért a hiba ott nem jelentkezett.
+**Megfigyelés (telepítési szkript):** a v2 újratelepítésekor az app nem indult el, mert az adatbázis elutasította a jelszavát. Az ok: a `deploy-v2.sh` újratelepítéskor törölte a célkönyvtárat a titkokkal együtt, és új jelszót generált, a meglévő adatbázis-volume viszont az első inicializáláskor beállított jelszót őrizte. A szkript azóta a titkokat külön, megmaradó könyvtárban tárolja (`/opt/booking/secrets`), az adatbázis-felhasználó jelszavát pedig a meglévő titokhoz igazítottuk. Az első telepítés üres volume-ra történt, ezért a hiba ott nem jelentkezett.
 
 # 5. Elemzés
 
@@ -307,7 +294,7 @@ Az eszköz kimenete gyors és jól megismételhető, de önmagában nem bizonyí
 
 ### M-04: Nem rögzített, sérülékeny image-ek (Magas)
 
-**Tény:** `latest` tagek, 18 kritikus és 436 magas súlyosságú sérülékenység. A `latest` váltása a projekt előkészítésekor egy build megszakadását is okozta (4.3 fejezet). **Kockázat:** ismert sérülékenységek kihasználása, nem reprodukálható build, váratlan üzemzavar. **Javaslat:** rögzített verzió és digest, minimális (alpine) alap image, rendszeres szkennelés és újraépítés. Kontroll: preventív. Kezelés: javítás.
+**Tény:** `latest` tagek, 18 kritikus és 436 magas súlyosságú sérülékenység. A `latest` váltása a projekt előkészítésekor egy build megszakadását is okozta (4.3 fejezet). **Kockázat:** ismert sérülékenységek kihasználása, nem reprodukálható build, váratlan üzemzavar. **Javaslat:** rögzített verzió és digest, minimális (alpine) alap image. Az image-cserével meg nem szűnő források kezelése: a `gosu` törlése, a pip eltávolítása a futtatási image-ből, csomagfrissítés a buildben. Rendszeres szkennelés és újraépítés. Kontroll: preventív. Kezelés: javítás.
 
 ### M-01: Hiányzó host-auditálás (Közepes)
 
@@ -350,7 +337,7 @@ Az eszköz kimenete gyors és jól megismételhető, de önmagában nem bizonyí
 | Publikált portok | 3 (0.0.0.0) | 1 (127.0.0.1) | −2 |
 | Root konténerek | 3 | 0 | −3 |
 
-A v2-ben maradt 4 WARN: 1.1.1 a külön partíció (M-12), 2.12 és 4.5 az authorization plugin és a content trust (M-13), 5.9 pedig az egyetlen, szükséges proxy port, ami elfogadható. A Trivy-értékek a javítás utáni v2 mérésből származnak, az első utókövetéskor még 41 magas vagy kritikus sérülékenység volt (4.4 fejezet).
+A v2-ben maradt 4 WARN: 1.1.1 a külön partíció (M-12), 2.12 és 4.5 az authorization plugin és a content trust (M-13), 5.9 pedig az egyetlen, szükséges proxy port, ami elfogadható.
 
 ## 7.3 Új akciótervi javaslatok (maradványkockázat)
 

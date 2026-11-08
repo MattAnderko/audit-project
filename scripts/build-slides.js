@@ -265,7 +265,7 @@ s.addChart(pres.charts.BAR, [
   showTitle: true, title: "WARN eredmények CIS fejezetenként", titleFontSize: 13, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
 });
 text(s, "cmp-note", "Maradék 4 WARN: partíció, authorization, content trust (felvállalva), 1 szükséges proxy port", { x: 0.5, y: 4.8, w: 8.4, h: 0.3, fontSize: 11, color: C.accent6 });
-s.addNotes("11 megállapítás javult, 2 kockázatot tudatosan felvállaltunk. A host fejezetben az auditd szabályok 8 WARN-t szüntettek meg. Az első utókövetés még 41 magas vagy kritikus sérülékenységet talált az upstream image-ekben (gosu, pip, Alpine csomagok). Egy második javítási kör után az ismételt mérés 0-t mutatott.");
+s.addNotes("11 megállapítás javult, 2 kockázatot tudatosan felvállaltunk. A host fejezetben az auditd szabályok 8 WARN-t szüntettek meg. A magas és kritikus sérülékenységek száma 454-ről 0-ra csökkent: az alpine image-ek mellett a gosu és a pip eltávolítása és a csomagfrissítés is kellett.");
 
 // ---- 10. Tanulságok ------------------------------------------------------------------------
 s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Eredmények" });

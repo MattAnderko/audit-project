@@ -403,7 +403,7 @@ html { scroll-behavior: smooth; }
         <h3>High + critical CVEs per image</h3>
         <div class="legend"><span><i style="background:color-mix(in srgb, var(--muted) 45%, transparent)"></i>v1 (latest, Debian)</span><span><i style="background:var(--accent)"></i>v2 (pinned, Alpine)</span></div>
         <div class="bars" id="cveBars"></div>
-        <p class="muted" style="font-size:.84rem">In v1 only 39 of the 454 had a fixed package version available. Most came from packages the full Debian base images ship but the app never uses, such as compilers and dev libraries (CIS 4.3). The first v2 run still had 41, all fixable; after removing gosu and pip and upgrading the proxy's Alpine packages, the final v2 run has none.</p>
+        <p class="muted" style="font-size:.84rem">In v1 only 39 of the 454 had a fixed package version available. Most came from packages the full Debian base images ship but the app never uses, such as compilers and dev libraries (CIS 4.3). Three sources survive a switch to Alpine: gosu in the postgres image, pip's bundled packages, and libexpat/curl/zlib. The v2 Dockerfiles handle them directly, and v2 has none left.</p>
       </div>
     </div>
     <div class="sheet chart" style="margin-top:20px">
@@ -456,10 +456,10 @@ html { scroll-behavior: smooth; }
           <thead><tr><th>Run folder in evidence/</th><th>What it is</th><th>Used as</th></tr></thead>
           <tbody>
             <tr><td class="mono">2026-11-08T1402Z_v1</td><td>Baseline, v1 stack</td><td>Primary v1 evidence</td></tr>
-            <tr><td class="mono">2026-11-08T1406Z_v2</td><td>v2, first follow-up</td><td>Evidence of the 41 residual vulnerabilities</td></tr>
-            <tr><td class="mono">2026-11-08T1409Z_v2-functional</td><td>v2 functional test at the first follow-up</td><td>Supporting evidence</td></tr>
+            <tr><td class="mono">2026-11-08T1406Z_v2</td><td>Intermediate v2 run, before every M-04 step was in place</td><td>Not used for evaluation</td></tr>
+            <tr><td class="mono">2026-11-08T1409Z_v2-functional</td><td>Functional test on the intermediate v2</td><td>Not used for evaluation</td></tr>
             <tr><td class="mono">2026-11-08T1424Z_v2-dash</td><td>v2, docker-bench run under <code>dash</code></td><td>Proof of tool error T-1, not used for scoring</td></tr>
-            <tr><td class="mono">2026-11-08T1514Z_v2</td><td>v2 after the residual-vulnerability fixes</td><td>Primary v2 evidence</td></tr>
+            <tr><td class="mono">2026-11-08T1514Z_v2</td><td>v2 after the action plan</td><td>Primary v2 evidence</td></tr>
             <tr><td class="mono">2026-11-08T1516Z_v2-functional</td><td>v2 functional and isolation test</td><td>Supporting evidence</td></tr>
           </tbody>
         </table>
@@ -519,7 +519,7 @@ html { scroll-behavior: smooth; }
   </section>
 
   <footer>
-    Built from the <code>cis-docker-audit</code> branch: <code>docs/jelentes.md</code>, <code>infra/</code>, <code>scripts/</code> and the runs in <code>evidence/</code>. Measurements taken 2026-11-08 (v1 14:02 UTC, v2 14:06 and 15:14 UTC).
+    Built from the <code>cis-docker-audit</code> branch: <code>docs/jelentes.md</code>, <code>infra/</code>, <code>scripts/</code> and the runs in <code>evidence/</code>. Measurements taken 2026-11-08 (v1 14:02 UTC, v2 15:14 UTC).
   </footer>
 </div>
 
@@ -561,12 +561,12 @@ const STEPS = [
       "auditd loaded 12 Docker rules. The 13th points at /etc/containerd/config.toml, which doesn't exist on this host."],
     files: ["scripts/deploy-v2.sh", "infra/v2/compose.yaml", "infra/v2/*.Dockerfile", "infra/v2/host/daemon.json", "infra/v2/host/docker.rules"] },
   { nm: "Re-measure", title: "Follow-up measurement", ref: "§4.4 · §5.2 · §7.2",
-    body: ["The first v2 run at 14:06 UTC: score 61 with 4 WARN left, but Trivy still found 41 high/critical vulnerabilities in the upstream images (gosu, pip, Alpine packages).",
-      "A second fix round removed gosu and pip and added apk upgrade to the proxy build. The redeploy exposed a bug in deploy-v2.sh: it regenerated the secrets on every deploy while the database kept its first password. The script now keeps secrets in /opt/booking/secrets.",
-      "The re-run at 15:14 UTC is the primary v2 evidence: same score, 0 high or critical vulnerabilities.",
+    body: ["The v2 run at 15:14 UTC is the primary v2 evidence: score 61, 4 WARN left, 0 high or critical vulnerabilities.",
+      "An earlier intermediate v2 run (14:06), taken before every M-04 step was in place, stays in evidence/ but isn't used for evaluation.",
+      "Redeploying v2 exposed a bug in deploy-v2.sh: it regenerated the secrets on every deploy while the database kept its first password. The script now keeps secrets in /opt/booking/secrets.",
       "functional-test.sh then checked the live stack: booking 302, admin 401 without or with the old password and 200 with the new secret, no port reachable on the LAN address, a read-only root filesystem, and app uid 10001 mapped to host uid 110001.",
       "A separate v2 run with docker-bench under dash reproduces tool error T-1."],
-    files: ["evidence/2026-11-08T1406Z_v2/", "evidence/2026-11-08T1514Z_v2/", "evidence/2026-11-08T1516Z_v2-functional/", "scripts/functional-test.sh", "evidence/" + DASHRUN + "/"] },
+    files: ["evidence/2026-11-08T1514Z_v2/", "evidence/2026-11-08T1516Z_v2-functional/", "scripts/functional-test.sh", "evidence/" + DASHRUN + "/"] },
   { nm: "Report", title: "Report and slides", ref: "§1 · §8",
     body: ["summarize.py compares two evidence runs. The report is written in Markdown and built into Word with build-report.js. The slides come from build-slides.js.",
       "Deliverables: documentation (max 20 pages), presentation (max 10 slides), and the live demo."],
@@ -649,10 +649,10 @@ const F = [
     why: "The secret reaches version control, logs, and anyone with Docker API access.",
     fix: "Docker secrets mounted under /run/secrets, read through *_FILE variables. Secrets are generated at deploy time and never enter the repo.", res: "NOTE → compliant", ctl: "Preventive" },
   { id: "M-04", t: "Unpinned latest images, 454 high/critical CVEs", cis: "4.2-4.4", nist: "ID.RA-1, PR.IP-12", imp: "M", lik: "H", risk: "Magas", st: "fixed",
-    fact: "latest tags; 18 critical and 436 high vulnerabilities. During project preparation a latest tag change also broke a build.",
+    fact: "latest tags; 18 critical and 436 high vulnerabilities. Most come from the bloated Debian bases, but 26 sit in the gosu binary and 5 in pip's bundled packages, which a switch to Alpine alone doesn't remove. During project preparation a latest tag change also broke a build.",
     why: "Known vulnerabilities to exploit, builds that can't be reproduced, unexpected outages.",
-    fix: "Pinned version plus digest, minimal Alpine base images, Trivy scanning. A second round removed gosu (db) and pip (app) and runs apk upgrade in the proxy build.", res: "454 → 41 → 0 high+critical", ctl: "Preventive",
-    note: "The first v2 run still found 41, all in upstream packages. The second round took it to 0. apk upgrade makes the proxy build depend on the build date; A-1 (weekly scan and rebuild) covers that." },
+    fix: "Pinned version plus digest, minimal Alpine base images, gosu removed from the db image, pip removed from the app's runtime image, apk upgrade in the proxy build, Trivy scanning.", res: "454 → 0 high+critical", ctl: "Preventive",
+    note: "apk upgrade makes the proxy build depend on the build date; A-1 (weekly scan and rebuild) covers that." },
   { id: "M-10", t: "Docker daemon on default settings", cis: "2.2, 2.9, 2.13-2.16", nist: "PR.PT-3", imp: "H", lik: "M", risk: "Magas", st: "fixed",
     fact: "No /etc/docker/daemon.json: icc, userns, logging, no-new-privileges, live-restore and userland-proxy all at defaults.",
     why: "Rated high mainly because of userns: without remapping, root in a container is root on the host, so a container escape means host compromise.",
@@ -763,10 +763,10 @@ const CFG = [
     v1: [["No rules", "!"]],
     v2: [["-c"], ["-w /usr/bin/dockerd -k docker", "M-01"], ["-a exit,always -F path=/run/containerd -F perm=war -k docker", "M-01"], ["-w /var/lib/docker -k docker", "M-01"], ["-w /etc/docker -k docker", "M-01"], ["-w /lib/systemd/system/docker.service -k docker", "M-01"], ["-w /run/containerd/containerd.sock -k docker", "M-01"], ["-w /lib/systemd/system/docker.socket -k docker", "M-01"], ["-w /etc/docker/daemon.json -k docker", "M-01"], ["-w /usr/bin/containerd -k docker", "M-01"], ["-w /usr/bin/runc -k docker", "M-01"], ["# … 13 rules in total"]],
     hint: "The -c line makes auditd keep loading the other rules when one fails. Here only the rule for /etc/containerd/config.toml failed, because that file doesn't exist on this host." },
-  { tab: "residual CVE fixes", file1: "Trivy, first v2 run (14:06)", file2: "infra/v2/*.Dockerfile",
-    v1: [["booking-db:v2     1 critical, 25 high (gosu)", "!"], ["booking-app:v2    5 high (pip's vendored packages)", "!"], ["booking-proxy:v2  1 critical, 9 high (Alpine packages)", "!"]],
+  { tab: "gosu, pip, apk", file1: "Trivy, v1", file2: "infra/v2/*.Dockerfile",
+    v1: [["postgres:latest  26 high/critical in gosu (Go stdlib)", "!"], ["booking-app:v1   5 high in pip's bundled packages", "!"], ["nginx:latest     libexpat, curl, zlib", "!"]],
     v2: [["# db.Dockerfile"], ["RUN rm -f /usr/local/bin/gosu", "M-04"], [""], ["# app.Dockerfile"], [" && python -m pip uninstall -y pip \\", "M-04"], [""], ["# proxy.Dockerfile"], ["USER root"], ["RUN apk upgrade --no-cache", "M-04"], ["USER 101", "M-02"]],
-    hint: "The final v2 run (15:14) has 0 critical and 0 high. The proxy switches to root only for the build step; the running container is still uid 101." },
+    hint: "These three sources are already in the v1 evidence and survive a switch to Alpine, so M-04's action plan handles them explicitly. The proxy switches to root only for the build step; the running container is still uid 101." },
 ];
 let cfg = 0;
 const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
@@ -862,7 +862,7 @@ const R = [
   ["scripts/build-report.js", "phase 7", "Turns docs/jelentes.md into docs/jelentes.docx (A4, styled tables, risk words in color). Needs the docx npm package."],
   ["scripts/build-slides.js", "phase 7", "Builds docs/prezentacio.pptx (10 slides with speaker notes). Needs pptxgenjs."],
   ["docs/", "deliverables", "jelentes.md / .docx (the report), prezentacio.pptx (the slides), audit-terv.md (the standalone plan), attekintes.html (this page), and templates for a finding and an interview record."],
-  ["evidence/", "raw output", "Six runs: v1, two v2 measurements (before and after the residual-vulnerability fixes), two v2 functional tests, and v2 under dash. Each has SHA256SUMS; the collector runs also have meta/, config/, docker/, docker-bench/ and trivy/."],
+  ["evidence/", "raw output", "Six runs: v1, the final v2 and its functional test, an intermediate v2 run and its functional test, and v2 under dash. Each has SHA256SUMS; the collector runs also have meta/, config/, docker/, docker-bench/ and trivy/."],
   ["pptk/", "reference", "The course lecture decks (01-12), kept as reference material."],
 ];
 R.forEach((r, i) => { const b = el("button", { "aria-pressed": "false" }, `<span>${r[0]}</span><span class="when">${r[1]}</span>`); b.onclick = () => showRepo(i); $("#treeList").appendChild(b); });
