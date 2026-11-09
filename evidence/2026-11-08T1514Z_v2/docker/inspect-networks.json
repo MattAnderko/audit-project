@@ -1,0 +1,220 @@
+[
+    {
+        "Name": "booking-v2_backend",
+        "Id": "1d1126ef26337bfbee14335ee309947cc468b4cc3a023b0344f3926b45870d1e",
+        "Created": "2026-11-08T15:05:16.26761281+01:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": true,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.config-hash": "be43d8d903837447b0f0c9209357fc737f6e39204a400bf78a76c3cb45e9f6f2",
+            "com.docker.compose.network": "backend",
+            "com.docker.compose.project": "booking-v2",
+            "com.docker.compose.version": "5.1.0"
+        },
+        "Containers": {
+            "669fee51499578cd0ec6e05a4faa948d62d407f08a46a3934d50dcc53ec06d77": {
+                "Name": "booking-v2-db-1",
+                "EndpointID": "4dc838d2287c0993a8cc35f3f77743b087720b02b453a8c7f009ecb5cc2ab36c",
+                "MacAddress": "2a:47:ea:28:12:5a",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            },
+            "8a7abb49c3c4b03130f90158331ce41bc8706eba5d004506384b399dec9ac563": {
+                "Name": "booking-v2-app-1",
+                "EndpointID": "cf701824facc0fe5f7b42e47273ab209e3e18fae87f55fdbcb54175b920a1104",
+                "MacAddress": "c6:f0:a1:99:a4:43",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Status": {
+            "IPAM": {
+                "Subnets": {
+                    "172.18.0.0/16": {
+                        "IPsInUse": 5,
+                        "DynamicIPsAvailable": 65531
+                    }
+                }
+            }
+        }
+    },
+    {
+        "Name": "booking-v2_frontend",
+        "Id": "da466f12a5a7c8870391fef3f62ed44f0ae7cd530bed22d077e11c976c807ea7",
+        "Created": "2026-11-08T15:05:16.297245182+01:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.19.0.0/16",
+                    "Gateway": "172.19.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.config-hash": "58fa204a874b4211042f8b5c1f62838998c6fe1151dbcd8033b16296a80e4d90",
+            "com.docker.compose.network": "frontend",
+            "com.docker.compose.project": "booking-v2",
+            "com.docker.compose.version": "5.1.0"
+        },
+        "Containers": {
+            "8a7abb49c3c4b03130f90158331ce41bc8706eba5d004506384b399dec9ac563": {
+                "Name": "booking-v2-app-1",
+                "EndpointID": "0a806602fefc5b5cdf58df8da4648dff786d057266664a2057b87fe130327ec1",
+                "MacAddress": "aa:e6:4e:76:93:de",
+                "IPv4Address": "172.19.0.2/16",
+                "IPv6Address": ""
+            },
+            "ad269261fcdeab890f88ea3039b7246a568d75d2b89d6bf0a7895f75f349f473": {
+                "Name": "booking-v2-proxy-1",
+                "EndpointID": "2c49d1fc68a45dbd8e6709a716c93beee05d48ba9a0b27a39b1b914633f15127",
+                "MacAddress": "b2:62:7a:9f:05:13",
+                "IPv4Address": "172.19.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Status": {
+            "IPAM": {
+                "Subnets": {
+                    "172.19.0.0/16": {
+                        "IPsInUse": 5,
+                        "DynamicIPsAvailable": 65531
+                    }
+                }
+            }
+        }
+    },
+    {
+        "Name": "bridge",
+        "Id": "a7815e996781140e77dfe0408e73307a2eafd817bffa15d60e6863dc6e193bd9",
+        "Created": "2026-11-08T15:04:19.589354612+01:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "false",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {},
+        "Containers": {},
+        "Status": {
+            "IPAM": {
+                "Subnets": {
+                    "172.17.0.0/16": {
+                        "IPsInUse": 3,
+                        "DynamicIPsAvailable": 65533
+                    }
+                }
+            }
+        }
+    },
+    {
+        "Name": "host",
+        "Id": "44c9977fccc60751536cb8e9941ec2646a77f8bf4a226a9f1df3e8352405622c",
+        "Created": "2026-11-08T15:04:19.585537477+01:00",
+        "Scope": "local",
+        "Driver": "host",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": null
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Options": {},
+        "Labels": {},
+        "Containers": {},
+        "Status": {
+            "IPAM": {}
+        }
+    },
+    {
+        "Name": "none",
+        "Id": "e157514c6eb024f23325f67d2713be5d5a15dbf9511d6548b65118061c9386dc",
+        "Created": "2026-11-08T15:04:19.580765196+01:00",
+        "Scope": "local",
+        "Driver": "null",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": null
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Options": {},
+        "Labels": {},
+        "Containers": {},
+        "Status": {
+            "IPAM": {}
+        }
+    }
+]

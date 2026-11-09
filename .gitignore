@@ -1,0 +1,12 @@
+# Titkok
+.env
+*.env
+secrets/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+~$*
+
+# LibreOffice zárolási fájlok
+.~lock.*#

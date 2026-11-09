@@ -1,0 +1,977 @@
+[
+    {
+        "Id": "ad269261fcdeab890f88ea3039b7246a568d75d2b89d6bf0a7895f75f349f473",
+        "Created": "2026-11-08T14:55:25.473466627Z",
+        "Path": "/docker-entrypoint.sh",
+        "Args": [
+            "nginx",
+            "-g",
+            "daemon off;"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 79001,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-11-08T15:04:55.622192006Z",
+            "FinishedAt": "0001-01-01T00:00:00Z",
+            "Health": {
+                "Status": "healthy",
+                "FailingStreak": 0,
+                "Log": [
+                    {
+                        "Start": "2026-11-08T16:12:43.093734932+01:00",
+                        "End": "2026-11-08T16:12:43.129090036+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    },
+                    {
+                        "Start": "2026-11-08T16:13:13.129687749+01:00",
+                        "End": "2026-11-08T16:13:13.155932359+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    },
+                    {
+                        "Start": "2026-11-08T16:13:43.156686417+01:00",
+                        "End": "2026-11-08T16:13:43.183274479+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    },
+                    {
+                        "Start": "2026-11-08T16:14:13.183678875+01:00",
+                        "End": "2026-11-08T16:14:13.209607341+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    },
+                    {
+                        "Start": "2026-11-08T16:14:43.210713058+01:00",
+                        "End": "2026-11-08T16:14:43.235856092+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    }
+                ]
+            }
+        },
+        "Image": "sha256:c66dd9572e097c92af9874cfec058c287b43940b1adf19dc8c926bf866a43ad4",
+        "ResolvConfPath": "/var/lib/docker/100000.100000/containers/ad269261fcdeab890f88ea3039b7246a568d75d2b89d6bf0a7895f75f349f473/resolv.conf",
+        "HostnamePath": "/var/lib/docker/100000.100000/containers/ad269261fcdeab890f88ea3039b7246a568d75d2b89d6bf0a7895f75f349f473/hostname",
+        "HostsPath": "/var/lib/docker/100000.100000/containers/ad269261fcdeab890f88ea3039b7246a568d75d2b89d6bf0a7895f75f349f473/hosts",
+        "LogPath": "",
+        "Name": "/booking-v2-proxy-1",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "journald",
+                "Config": {}
+            },
+            "NetworkMode": "booking-v2_frontend",
+            "PortBindings": {
+                "8080/tcp": [
+                    {
+                        "HostIp": "127.0.0.1",
+                        "HostPort": "8080"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "on-failure",
+                "MaximumRetryCount": 5
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": [
+                "ALL"
+            ],
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": true,
+            "SecurityOpt": [
+                "no-new-privileges:true"
+            ],
+            "Tmpfs": {
+                "/tmp": ""
+            },
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 512,
+            "Memory": 134217728,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 268435456,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": 200,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware",
+                "/sys/devices/system/cpu/cpu0/thermal_throttle",
+                "/sys/devices/system/cpu/cpu1/thermal_throttle",
+                "/sys/devices/system/cpu/cpu2/thermal_throttle",
+                "/sys/devices/system/cpu/cpu3/thermal_throttle",
+                "/sys/devices/system/cpu/cpu4/thermal_throttle",
+                "/sys/devices/system/cpu/cpu5/thermal_throttle",
+                "/sys/devices/system/cpu/cpu6/thermal_throttle",
+                "/sys/devices/system/cpu/cpu7/thermal_throttle",
+                "/sys/devices/system/cpu/cpu8/thermal_throttle",
+                "/sys/devices/system/cpu/cpu9/thermal_throttle",
+                "/sys/devices/system/cpu/cpu10/thermal_throttle",
+                "/sys/devices/system/cpu/cpu11/thermal_throttle"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "ID": "ad269261fcdeab890f88ea3039b7246a568d75d2b89d6bf0a7895f75f349f473",
+                "LowerDir": "/var/lib/docker/100000.100000/overlay2/03f8488bc38d7fb5ac0be8a6f998b6e9cdb5790665f044a156496b8e06e3bd78-init/diff:/var/lib/docker/100000.100000/overlay2/m6fbq6i6uo92jrpstnzq3s58u/diff:/var/lib/docker/100000.100000/overlay2/mfvs7z01tkn59leqjt3imrymc/diff:/var/lib/docker/100000.100000/overlay2/d764696a88d5a0a042fddbe1c408e963249cead4afd2bd85478a40bca91167a5/diff:/var/lib/docker/100000.100000/overlay2/ee3bf9f4f00f703470bd816d034b34c6a77ddedf94d21b236c01a1a2d2923362/diff:/var/lib/docker/100000.100000/overlay2/2c940286e4afb0cfc8c10aca7222cde9dc25c6d4f9335d90a5280a510442dc40/diff:/var/lib/docker/100000.100000/overlay2/be20d632685b63f8fbf342b3c2ae87eb19f245df12e2e37fb10c1d0d27fe04f5/diff:/var/lib/docker/100000.100000/overlay2/73564ca80774296cf9d7b50bd9c8282b37952bd0610c9f7203f78571f70c14f2/diff:/var/lib/docker/100000.100000/overlay2/5fedc3ace74902b7eb212f4e2fc793218c268f4c58d8e01736481cb3357eb4b4/diff:/var/lib/docker/100000.100000/overlay2/b1bacca5db96aeee98de6df85ae183e4a2d54c958492df15bc85e74ccc387d9f/diff:/var/lib/docker/100000.100000/overlay2/5541ad2045862540ebb4a1d1ebbb0f40a43876d1afcc1c601b9f6ad21571226f/diff:/var/lib/docker/100000.100000/overlay2/332359c3ac47615c0783e47a6c96a619e39f156c7aeec1baa8f6d4ecf773955e/diff",
+                "MergedDir": "/var/lib/docker/100000.100000/overlay2/03f8488bc38d7fb5ac0be8a6f998b6e9cdb5790665f044a156496b8e06e3bd78/merged",
+                "UpperDir": "/var/lib/docker/100000.100000/overlay2/03f8488bc38d7fb5ac0be8a6f998b6e9cdb5790665f044a156496b8e06e3bd78/diff",
+                "WorkDir": "/var/lib/docker/100000.100000/overlay2/03f8488bc38d7fb5ac0be8a6f998b6e9cdb5790665f044a156496b8e06e3bd78/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "ad269261fcde",
+            "Domainname": "",
+            "User": "101",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "8080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NGINX_VERSION=1.31.7",
+                "PKG_RELEASE=1",
+                "DYNPKG_RELEASE=1",
+                "NJS_VERSION=1.0.2",
+                "NJS_RELEASE=1"
+            ],
+            "Cmd": [
+                "nginx",
+                "-g",
+                "daemon off;"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "wget -qO- http://127.0.0.1:8080/nginx-health >/dev/null || exit 1"
+                ],
+                "Interval": 30000000000,
+                "Timeout": 3000000000,
+                "Retries": 3
+            },
+            "Image": "booking-proxy:v2",
+            "Volumes": null,
+            "WorkingDir": "/",
+            "Entrypoint": [
+                "/docker-entrypoint.sh"
+            ],
+            "Labels": {
+                "com.docker.compose.config-hash": "476525fd98596a9dfbec9e37c0feece99a97d6a7a4ac5db430d9c3ccb4fecccf",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "app:service_healthy:false",
+                "com.docker.compose.image": "sha256:c66dd9572e097c92af9874cfec058c287b43940b1adf19dc8c926bf866a43ad4",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "booking-v2",
+                "com.docker.compose.project.config_files": "/opt/booking/infra/v2/compose.yaml",
+                "com.docker.compose.project.working_dir": "/opt/booking/infra/v2",
+                "com.docker.compose.replace": "proxy-1",
+                "com.docker.compose.service": "proxy",
+                "com.docker.compose.version": "5.1.0",
+                "maintainer": "NGINX Docker Maintainers <docker-maint@nginx.com>",
+                "org.opencontainers.image.created": "2026-10-19T02:30:22.700Z",
+                "org.opencontainers.image.description": "Unprivileged NGINX Dockerfiles",
+                "org.opencontainers.image.licenses": "Apache-2.0",
+                "org.opencontainers.image.revision": "bb7393196554e11f7ba95452856d8b5faff217bf",
+                "org.opencontainers.image.source": "https://github.com/nginx/docker-nginx-unprivileged",
+                "org.opencontainers.image.title": "docker-nginx-unprivileged",
+                "org.opencontainers.image.url": "https://github.com/nginx/docker-nginx-unprivileged",
+                "org.opencontainers.image.version": "1.31.7-alpine"
+            },
+            "StopSignal": "SIGQUIT"
+        },
+        "NetworkSettings": {
+            "SandboxID": "b27ff7e2e6d44c53fe6cadc3554c5ff4cccf5a6e1fb9b15b345a9939698d4e9a",
+            "SandboxKey": "/var/run/docker/netns/b27ff7e2e6d4",
+            "Ports": {
+                "8080/tcp": [
+                    {
+                        "HostIp": "127.0.0.1",
+                        "HostPort": "8080"
+                    }
+                ]
+            },
+            "Networks": {
+                "booking-v2_frontend": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "booking-v2-proxy-1",
+                        "proxy"
+                    ],
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "da466f12a5a7c8870391fef3f62ed44f0ae7cd530bed22d077e11c976c807ea7",
+                    "EndpointID": "2c49d1fc68a45dbd8e6709a716c93beee05d48ba9a0b27a39b1b914633f15127",
+                    "Gateway": "172.19.0.1",
+                    "IPAddress": "172.19.0.3",
+                    "MacAddress": "b2:62:7a:9f:05:13",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": [
+                        "booking-v2-proxy-1",
+                        "proxy",
+                        "ad269261fcde"
+                    ]
+                }
+            }
+        }
+    },
+    {
+        "Id": "8a7abb49c3c4b03130f90158331ce41bc8706eba5d004506384b399dec9ac563",
+        "Created": "2026-11-08T14:55:24.587988207Z",
+        "Path": "gunicorn",
+        "Args": [
+            "-b",
+            "0.0.0.0:8000",
+            "-w",
+            "2",
+            "--worker-tmp-dir",
+            "/tmp",
+            "app:app"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 78093,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-11-08T15:04:30.48886874Z",
+            "FinishedAt": "2026-11-08T15:01:38.53550011Z",
+            "Health": {
+                "Status": "healthy",
+                "FailingStreak": 0,
+                "Log": [
+                    {
+                        "Start": "2026-11-08T16:12:43.103773255+01:00",
+                        "End": "2026-11-08T16:12:43.14445249+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    },
+                    {
+                        "Start": "2026-11-08T16:13:13.144985336+01:00",
+                        "End": "2026-11-08T16:13:13.181091803+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    },
+                    {
+                        "Start": "2026-11-08T16:13:43.182009152+01:00",
+                        "End": "2026-11-08T16:13:45.178415602+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    },
+                    {
+                        "Start": "2026-11-08T16:14:15.179458722+01:00",
+                        "End": "2026-11-08T16:14:15.921753771+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    },
+                    {
+                        "Start": "2026-11-08T16:14:45.922662898+01:00",
+                        "End": "2026-11-08T16:14:45.958618065+01:00",
+                        "ExitCode": 0,
+                        "Output": ""
+                    }
+                ]
+            }
+        },
+        "Image": "sha256:f313ca6124fd528e8ac3d93a2a399267cb10c4dab19bd1e45548df1d3bf18ea0",
+        "ResolvConfPath": "/var/lib/docker/100000.100000/containers/8a7abb49c3c4b03130f90158331ce41bc8706eba5d004506384b399dec9ac563/resolv.conf",
+        "HostnamePath": "/var/lib/docker/100000.100000/containers/8a7abb49c3c4b03130f90158331ce41bc8706eba5d004506384b399dec9ac563/hostname",
+        "HostsPath": "/var/lib/docker/100000.100000/containers/8a7abb49c3c4b03130f90158331ce41bc8706eba5d004506384b399dec9ac563/hosts",
+        "LogPath": "",
+        "Name": "/booking-v2-app-1",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "journald",
+                "Config": {}
+            },
+            "NetworkMode": "booking-v2_backend",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "on-failure",
+                "MaximumRetryCount": 5
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": [
+                "ALL"
+            ],
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": true,
+            "SecurityOpt": [
+                "no-new-privileges:true"
+            ],
+            "Tmpfs": {
+                "/tmp": ""
+            },
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 512,
+            "Memory": 268435456,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 536870912,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": 200,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "Mounts": [
+                {
+                    "Type": "bind",
+                    "Source": "/opt/booking/infra/v2/secrets/db_password.txt",
+                    "Target": "/run/secrets/db_password",
+                    "ReadOnly": true,
+                    "BindOptions": {}
+                },
+                {
+                    "Type": "bind",
+                    "Source": "/opt/booking/infra/v2/secrets/admin_password.txt",
+                    "Target": "/run/secrets/admin_password",
+                    "ReadOnly": true,
+                    "BindOptions": {}
+                }
+            ],
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware",
+                "/sys/devices/system/cpu/cpu0/thermal_throttle",
+                "/sys/devices/system/cpu/cpu1/thermal_throttle",
+                "/sys/devices/system/cpu/cpu2/thermal_throttle",
+                "/sys/devices/system/cpu/cpu3/thermal_throttle",
+                "/sys/devices/system/cpu/cpu4/thermal_throttle",
+                "/sys/devices/system/cpu/cpu5/thermal_throttle",
+                "/sys/devices/system/cpu/cpu6/thermal_throttle",
+                "/sys/devices/system/cpu/cpu7/thermal_throttle",
+                "/sys/devices/system/cpu/cpu8/thermal_throttle",
+                "/sys/devices/system/cpu/cpu9/thermal_throttle",
+                "/sys/devices/system/cpu/cpu10/thermal_throttle",
+                "/sys/devices/system/cpu/cpu11/thermal_throttle"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "ID": "8a7abb49c3c4b03130f90158331ce41bc8706eba5d004506384b399dec9ac563",
+                "LowerDir": "/var/lib/docker/100000.100000/overlay2/401d0bcf089c717e1dd55add7360f374bdabb2a707c320a46ea19afa5d885e81-init/diff:/var/lib/docker/100000.100000/overlay2/t2n6vdicrrxo29fjhtqnqs55w/diff:/var/lib/docker/100000.100000/overlay2/89td333xb1dhr155m7qw539q8/diff:/var/lib/docker/100000.100000/overlay2/sklckeku8qk3y1pra2k34u50r/diff:/var/lib/docker/100000.100000/overlay2/m1r13xej0j1dmm9yzuy9r202w/diff:/var/lib/docker/100000.100000/overlay2/f9q5ts9gikaeq8n12s6mkzv1f/diff:/var/lib/docker/100000.100000/overlay2/54b0081b2a6bc3346aace431784c80c6fb7f98f0853160d474a202e6709a432b/diff:/var/lib/docker/100000.100000/overlay2/d2f43403f6fa8ef8cfb541bb529f206956c091e45e9bae853fafb679fb2ff243/diff:/var/lib/docker/100000.100000/overlay2/3f0755f6b7dde24bd4bd338ef92888afcce282733ac73d065d1650126a71acce/diff:/var/lib/docker/100000.100000/overlay2/122d8658e81eceaa93c1b50e89eef0786113e1b8dea256e9dbe5968f26f61b86/diff",
+                "MergedDir": "/var/lib/docker/100000.100000/overlay2/401d0bcf089c717e1dd55add7360f374bdabb2a707c320a46ea19afa5d885e81/merged",
+                "UpperDir": "/var/lib/docker/100000.100000/overlay2/401d0bcf089c717e1dd55add7360f374bdabb2a707c320a46ea19afa5d885e81/diff",
+                "WorkDir": "/var/lib/docker/100000.100000/overlay2/401d0bcf089c717e1dd55add7360f374bdabb2a707c320a46ea19afa5d885e81/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/opt/booking/infra/v2/secrets/admin_password.txt",
+                "Destination": "/run/secrets/admin_password",
+                "Mode": "",
+                "RW": false,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/opt/booking/infra/v2/secrets/db_password.txt",
+                "Destination": "/run/secrets/db_password",
+                "Mode": "",
+                "RW": false,
+                "Propagation": "rprivate"
+            }
+        ],
+        "Config": {
+            "Hostname": "8a7abb49c3c4",
+            "Domainname": "",
+            "User": "10001:10001",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "8000/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "DB_USER=booking",
+                "DB_PASSWORD_FILE=***MASKED***",
+                "ADMIN_PASSWORD_FILE=***MASKED***",
+                "DB_HOST=db",
+                "DB_NAME=booking",
+                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "PYTHON_VERSION=3.14.10",
+                "PYTHON_SHA256=de414a57119abef52784d8993e341d53aed635fc2b05c2607d9f98a2c5b72032"
+            ],
+            "Cmd": [
+                "gunicorn",
+                "-b",
+                "0.0.0.0:8000",
+                "-w",
+                "2",
+                "--worker-tmp-dir",
+                "/tmp",
+                "app:app"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "wget -qO- http://127.0.0.1:8000/healthz >/dev/null || exit 1"
+                ],
+                "Interval": 30000000000,
+                "Timeout": 3000000000,
+                "StartPeriod": 20000000000,
+                "Retries": 3
+            },
+            "Image": "booking-app:v2",
+            "Volumes": null,
+            "WorkingDir": "/app",
+            "Entrypoint": null,
+            "Labels": {
+                "com.docker.compose.config-hash": "073b555bbb5e141a3197d3b54e8d93b3fc6b93a7701da9ef4fb97c303d360e9b",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "db:service_healthy:false",
+                "com.docker.compose.image": "sha256:f313ca6124fd528e8ac3d93a2a399267cb10c4dab19bd1e45548df1d3bf18ea0",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "booking-v2",
+                "com.docker.compose.project.config_files": "/opt/booking/infra/v2/compose.yaml",
+                "com.docker.compose.project.working_dir": "/opt/booking/infra/v2",
+                "com.docker.compose.replace": "app-1",
+                "com.docker.compose.service": "app",
+                "com.docker.compose.version": "5.1.0"
+            }
+        },
+        "NetworkSettings": {
+            "SandboxID": "61b312db83e809a464d8419b38b8318f07f10fd378b470a106722e6e14ddcd1e",
+            "SandboxKey": "/var/run/docker/netns/61b312db83e8",
+            "Ports": {
+                "8000/tcp": null
+            },
+            "Networks": {
+                "booking-v2_backend": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "booking-v2-app-1",
+                        "app"
+                    ],
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "1d1126ef26337bfbee14335ee309947cc468b4cc3a023b0344f3926b45870d1e",
+                    "EndpointID": "cf701824facc0fe5f7b42e47273ab209e3e18fae87f55fdbcb54175b920a1104",
+                    "Gateway": "",
+                    "IPAddress": "172.18.0.3",
+                    "MacAddress": "c6:f0:a1:99:a4:43",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": [
+                        "booking-v2-app-1",
+                        "app",
+                        "8a7abb49c3c4"
+                    ]
+                },
+                "booking-v2_frontend": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "booking-v2-app-1",
+                        "app"
+                    ],
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "da466f12a5a7c8870391fef3f62ed44f0ae7cd530bed22d077e11c976c807ea7",
+                    "EndpointID": "0a806602fefc5b5cdf58df8da4648dff786d057266664a2057b87fe130327ec1",
+                    "Gateway": "172.19.0.1",
+                    "IPAddress": "172.19.0.2",
+                    "MacAddress": "aa:e6:4e:76:93:de",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": [
+                        "booking-v2-app-1",
+                        "app",
+                        "8a7abb49c3c4"
+                    ]
+                }
+            }
+        }
+    },
+    {
+        "Id": "669fee51499578cd0ec6e05a4faa948d62d407f08a46a3934d50dcc53ec06d77",
+        "Created": "2026-11-08T14:55:23.436742978Z",
+        "Path": "docker-entrypoint.sh",
+        "Args": [
+            "postgres"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 69329,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-11-08T14:55:26.544172952Z",
+            "FinishedAt": "0001-01-01T00:00:00Z",
+            "Health": {
+                "Status": "healthy",
+                "FailingStreak": 0,
+                "Log": [
+                    {
+                        "Start": "2026-11-08T16:12:43.104662595+01:00",
+                        "End": "2026-11-08T16:12:43.139405021+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    },
+                    {
+                        "Start": "2026-11-08T16:13:13.140273821+01:00",
+                        "End": "2026-11-08T16:13:13.172043987+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    },
+                    {
+                        "Start": "2026-11-08T16:13:43.17237392+01:00",
+                        "End": "2026-11-08T16:13:44.554257069+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    },
+                    {
+                        "Start": "2026-11-08T16:14:14.554720935+01:00",
+                        "End": "2026-11-08T16:14:14.587736159+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    },
+                    {
+                        "Start": "2026-11-08T16:14:44.588795665+01:00",
+                        "End": "2026-11-08T16:14:44.617314568+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    }
+                ]
+            }
+        },
+        "Image": "sha256:35ac5aec296dd4b92663aa5700a14f7509f31151a9bdbccce0b6d92bf03f5fb5",
+        "ResolvConfPath": "/var/lib/docker/100000.100000/containers/669fee51499578cd0ec6e05a4faa948d62d407f08a46a3934d50dcc53ec06d77/resolv.conf",
+        "HostnamePath": "/var/lib/docker/100000.100000/containers/669fee51499578cd0ec6e05a4faa948d62d407f08a46a3934d50dcc53ec06d77/hostname",
+        "HostsPath": "/var/lib/docker/100000.100000/containers/669fee51499578cd0ec6e05a4faa948d62d407f08a46a3934d50dcc53ec06d77/hosts",
+        "LogPath": "",
+        "Name": "/booking-v2-db-1",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": [
+                "booking-v2_dbdata:/var/lib/postgresql:rw"
+            ],
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "journald",
+                "Config": {}
+            },
+            "NetworkMode": "booking-v2_backend",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "on-failure",
+                "MaximumRetryCount": 5
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": [
+                "ALL"
+            ],
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": true,
+            "SecurityOpt": [
+                "no-new-privileges:true"
+            ],
+            "Tmpfs": {
+                "/tmp": "",
+                "/var/run/postgresql": ""
+            },
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 512,
+            "Memory": 536870912,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 1073741824,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": 200,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "Mounts": [
+                {
+                    "Type": "bind",
+                    "Source": "/opt/booking/infra/v2/secrets/db_password.txt",
+                    "Target": "/run/secrets/db_password",
+                    "ReadOnly": true,
+                    "BindOptions": {}
+                }
+            ],
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware",
+                "/sys/devices/system/cpu/cpu0/thermal_throttle",
+                "/sys/devices/system/cpu/cpu1/thermal_throttle",
+                "/sys/devices/system/cpu/cpu2/thermal_throttle",
+                "/sys/devices/system/cpu/cpu3/thermal_throttle",
+                "/sys/devices/system/cpu/cpu4/thermal_throttle",
+                "/sys/devices/system/cpu/cpu5/thermal_throttle",
+                "/sys/devices/system/cpu/cpu6/thermal_throttle",
+                "/sys/devices/system/cpu/cpu7/thermal_throttle",
+                "/sys/devices/system/cpu/cpu8/thermal_throttle",
+                "/sys/devices/system/cpu/cpu9/thermal_throttle",
+                "/sys/devices/system/cpu/cpu10/thermal_throttle",
+                "/sys/devices/system/cpu/cpu11/thermal_throttle"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "ID": "669fee51499578cd0ec6e05a4faa948d62d407f08a46a3934d50dcc53ec06d77",
+                "LowerDir": "/var/lib/docker/100000.100000/overlay2/f66ec18f36330ac8483017aaec40a55885c1b126cf92197ef4272c12355d25b5-init/diff:/var/lib/docker/100000.100000/overlay2/lscd92wsg1uw9t9o2oxgsadnq/diff:/var/lib/docker/100000.100000/overlay2/de9516b413d3c8309e5ced75df1e3617c9d20d66d1daf035cd98e057190d67ff/diff:/var/lib/docker/100000.100000/overlay2/4c5c947f9ecf3473a867bc8215cc5626862534b4991c5c2d7f469c154204fdc6/diff:/var/lib/docker/100000.100000/overlay2/b2a2659f008ad5e4309acff1fa52aec44f2f30072b255d004f410894794bdf6b/diff:/var/lib/docker/100000.100000/overlay2/8a8fd4b1bf5ecd9e5cd973e9d3230d500f72421d473e8d435dfa46dfe599be46/diff:/var/lib/docker/100000.100000/overlay2/28a92ea52e0383089af68ef67d443ccc00a983c23402e29b921e6e0d7dcf4865/diff:/var/lib/docker/100000.100000/overlay2/54fc237b42223cb7998360b1c3d9f1935d057903646fd4281d783fcc404d2fce/diff:/var/lib/docker/100000.100000/overlay2/f078db577bd1836404658bb396fbb5fbe175ae5643481656fcf00ac005d59bdf/diff:/var/lib/docker/100000.100000/overlay2/d723cd28862e540d2eb8f08aa9d6e33d871d667aa85351cc23e260a479acaa25/diff:/var/lib/docker/100000.100000/overlay2/122d8658e81eceaa93c1b50e89eef0786113e1b8dea256e9dbe5968f26f61b86/diff",
+                "MergedDir": "/var/lib/docker/100000.100000/overlay2/f66ec18f36330ac8483017aaec40a55885c1b126cf92197ef4272c12355d25b5/merged",
+                "UpperDir": "/var/lib/docker/100000.100000/overlay2/f66ec18f36330ac8483017aaec40a55885c1b126cf92197ef4272c12355d25b5/diff",
+                "WorkDir": "/var/lib/docker/100000.100000/overlay2/f66ec18f36330ac8483017aaec40a55885c1b126cf92197ef4272c12355d25b5/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/opt/booking/infra/v2/secrets/db_password.txt",
+                "Destination": "/run/secrets/db_password",
+                "Mode": "",
+                "RW": false,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "volume",
+                "Name": "booking-v2_dbdata",
+                "Source": "/var/lib/docker/100000.100000/volumes/booking-v2_dbdata/_data",
+                "Destination": "/var/lib/postgresql",
+                "Driver": "local",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
+        "Config": {
+            "Hostname": "669fee514995",
+            "Domainname": "",
+            "User": "postgres",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "5432/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "POSTGRES_DB=booking",
+                "POSTGRES_PASSWORD_FILE=***MASKED***",
+                "POSTGRES_USER=booking",
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "GOSU_VERSION=1.19",
+                "LANG=en_US.utf8",
+                "PG_MAJOR=18",
+                "PG_VERSION=18.6",
+                "PG_SHA256=555610c24d53e4316da5b7d3fc25c279d96856d5e0e23ee308c328c5fa881d9f",
+                "DOCKER_PG_LLVM_DEPS=llvm21-dev \t\tclang21",
+                "PGDATA=/var/lib/postgresql/18/docker"
+            ],
+            "Cmd": [
+                "postgres"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" || exit 1"
+                ],
+                "Interval": 30000000000,
+                "Timeout": 3000000000,
+                "StartPeriod": 30000000000,
+                "Retries": 3
+            },
+            "Image": "booking-db:v2",
+            "Volumes": {
+                "/var/lib/postgresql": {}
+            },
+            "WorkingDir": "/",
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "Labels": {
+                "com.docker.compose.config-hash": "e76e1fab82147ea6577ca551c3d3e11624c2ebbfdab077d689fbd3bcbbaf9668",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "",
+                "com.docker.compose.image": "sha256:35ac5aec296dd4b92663aa5700a14f7509f31151a9bdbccce0b6d92bf03f5fb5",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "booking-v2",
+                "com.docker.compose.project.config_files": "/opt/booking/infra/v2/compose.yaml",
+                "com.docker.compose.project.working_dir": "/opt/booking/infra/v2",
+                "com.docker.compose.replace": "db-1",
+                "com.docker.compose.service": "db",
+                "com.docker.compose.version": "5.1.0"
+            },
+            "StopSignal": "SIGINT"
+        },
+        "NetworkSettings": {
+            "SandboxID": "bc78efdcb71e3bfbb343150db9ab74dc30c38f3785a09c018b9779cfd5f77786",
+            "SandboxKey": "/var/run/docker/netns/bc78efdcb71e",
+            "Ports": {
+                "5432/tcp": null
+            },
+            "Networks": {
+                "booking-v2_backend": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "booking-v2-db-1",
+                        "db"
+                    ],
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "1d1126ef26337bfbee14335ee309947cc468b4cc3a023b0344f3926b45870d1e",
+                    "EndpointID": "4dc838d2287c0993a8cc35f3f77743b087720b02b453a8c7f009ecb5cc2ab36c",
+                    "Gateway": "",
+                    "IPAddress": "172.18.0.2",
+                    "MacAddress": "2a:47:ea:28:12:5a",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": [
+                        "booking-v2-db-1",
+                        "db",
+                        "669fee514995"
+                    ]
+                }
+            }
+        }
+    }
+]

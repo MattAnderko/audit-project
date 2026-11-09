@@ -1,0 +1,34 @@
+[2026-11-08T14:02:15Z] Mérés indul: RUN_ID=2026-11-08T1402Z_v1, auditor=mate
+[2026-11-08T14:02:15Z] RUN: bash -c hostname; uname -a; cat /etc/os-release > meta/host.txt
+[2026-11-08T14:02:16Z] RUN: docker version > meta/docker-version.txt
+[2026-11-08T14:02:16Z] RUN: docker info > meta/docker-info.txt
+[2026-11-08T14:02:16Z] RUN: trivy --version > meta/trivy-version.txt
+[2026-11-08T14:02:16Z] RUN: git -C /opt/docker-bench-security rev-parse HEAD > meta/docker-bench-commit.txt
+[2026-11-08T14:02:16Z] INFO: /etc/docker/daemon.json nem létezik
+[2026-11-08T14:02:16Z] RUN: auditctl -l > config/auditctl-rules.txt
+[2026-11-08T14:02:16Z] RUN: bash -c head -n 200 /etc/audit/rules.d/*.rules > config/audit-rules.d.txt
+[2026-11-08T14:02:16Z]   WARN: kilépési kód 1 (bash -c head -n 200 /etc/audit/rules.d/*.rules)
+[2026-11-08T14:02:16Z] RUN: bash -c docker info -f "{{.DockerRootDir}}"; findmnt -T /var/lib/docker -o TARGET,SOURCE,FSTYPE; findmnt -R /var/lib/docker -o TARGET,SOURCE,FSTYPE > config/mounts-docker.txt
+[2026-11-08T14:02:16Z]   WARN: kilépési kód 1 (bash -c docker info -f "{{.DockerRootDir}}"; findmnt -T /var/lib/docker -o TARGET,SOURCE,FSTYPE; findmnt -R /var/lib/docker -o TARGET,SOURCE,FSTYPE)
+[2026-11-08T14:02:16Z] RUN: systemctl cat docker.service docker.socket > config/docker-service.txt
+[2026-11-08T14:02:16Z] RUN: bash -c ls -la /etc/docker /var/run/docker.sock /lib/systemd/system/docker.* /usr/lib/systemd/system/docker.* 2>&1 > config/docker-files-perms.txt
+[2026-11-08T14:02:16Z]   WARN: kilépési kód 2 (bash -c ls -la /etc/docker /var/run/docker.sock /lib/systemd/system/docker.* /usr/lib/systemd/system/docker.* 2>&1)
+[2026-11-08T14:02:16Z] Compose / Dockerfile másolatok: /home/mate/Uni/audit-project/infra/v1
+[2026-11-08T14:02:16Z] RUN: docker ps -a --no-trunc > docker/ps.txt
+[2026-11-08T14:02:16Z] RUN: docker images --digests --no-trunc > docker/images.txt
+[2026-11-08T14:02:16Z] RUN: docker network ls > docker/networks.txt
+[2026-11-08T14:02:17Z] RUN: docker volume ls > docker/volumes.txt
+[2026-11-08T14:02:17Z] RUN: docker inspect 5971214f8f4d 08e154c84441 540f6ea372d7 > docker/inspect-containers.json
+[2026-11-08T14:02:17Z] Titkok maszkolva: docker/inspect-containers.json
+[2026-11-08T14:02:17Z] RUN: docker network inspect 7682cad9af02 22f0c500068c a726ede4a308 a03776b55f7f > docker/inspect-networks.json
+[2026-11-08T14:02:17Z] RUN: docker-bench-security
+[2026-11-08T14:02:17Z]   shell: bash GNU bash, version 5.3.9(1)-release (x86_64-pc-linux-gnu)
+[2026-11-08T14:02:32Z] RUN: trivy image --quiet --scanners vuln --format json booking-app:v1 > trivy/image_booking-app_v1.json
+[2026-11-08T14:03:03Z] RUN: trivy image --scanners vuln --severity HIGH,CRITICAL booking-app:v1 > trivy/image_booking-app_v1.txt
+[2026-11-08T14:03:04Z] RUN: trivy image --quiet --scanners vuln --format json nginx:latest > trivy/image_nginx_latest.json
+[2026-11-08T14:03:53Z] RUN: trivy image --scanners vuln --severity HIGH,CRITICAL nginx:latest > trivy/image_nginx_latest.txt
+[2026-11-08T14:03:53Z] RUN: trivy image --quiet --scanners vuln --format json postgres:latest > trivy/image_postgres_latest.json
+[2026-11-08T14:04:02Z] RUN: trivy image --scanners vuln --severity HIGH,CRITICAL postgres:latest > trivy/image_postgres_latest.txt
+[2026-11-08T14:04:02Z] RUN: trivy config --quiet --format json /home/mate/Uni/audit-project/evidence/2026-11-08T1402Z_v1/config/compose > trivy/config.json
+[2026-11-08T14:04:06Z] RUN: trivy config /home/mate/Uni/audit-project/evidence/2026-11-08T1402Z_v1/config/compose > trivy/config.txt
+[2026-11-08T14:04:07Z] Mérés vége, hash-ek készítése

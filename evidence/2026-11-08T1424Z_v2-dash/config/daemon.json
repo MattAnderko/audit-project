@@ -1,0 +1,9 @@
+{
+  "icc": false,
+  "live-restore": true,
+  "userland-proxy": false,
+  "no-new-privileges": true,
+  "userns-remap": "default",
+  "log-driver": "journald",
+  "log-level": "info"
+}

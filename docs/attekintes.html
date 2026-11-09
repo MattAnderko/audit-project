@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Booking Stack Docker Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an auditor's workpaper. One reading column, sticky section index, each section tagged with the report chapter it explains. */
+:root {
+  --paper: #f5f7f9;
+  --sheet: #ffffff;
+  --ink: #16212c;
+  --muted: #5a6876;
+  --rule: #d6dde4;
+  --accent: #1f4e79;
+  --accent-soft: #e1eaf3;
+  --crit: #b80d0d;
+  --high: #c95a00;
+  --med: #9a7400;
+  --low: #437026;
+  --pass: #2f7a4b;
+  --warn: #b4581c;
+  --code-bg: #eef2f5;
+  --hl: #fff2c2;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f151b; --sheet: #151d25; --ink: #e2e8ee; --muted: #94a3b2; --rule: #27333f;
+    --accent: #85b6e3; --accent-soft: #1a2b3c; --crit: #ff6b6b; --high: #f39a4c; --med: #dcbc4a;
+    --low: #86c26a; --pass: #6cc58f; --warn: #f0a060; --code-bg: #0b1116; --hl: #3a3313; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f151b; --sheet: #151d25; --ink: #e2e8ee; --muted: #94a3b2; --rule: #27333f;
+  --accent: #85b6e3; --accent-soft: #1a2b3c; --crit: #ff6b6b; --high: #f39a4c; --med: #dcbc4a;
+  --low: #86c26a; --pass: #6cc58f; --warn: #f0a060; --code-bg: #0b1116; --hl: #3a3313; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.wrap { max-width: 1060px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.5rem, 3.2vw, 2rem); font-weight: 600; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+code { background: var(--code-bg); padding: 0.08em 0.35em; border-radius: 3px; overflow-wrap: anywhere; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+
+/* nav */
+nav.index {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper);
+  border-bottom: 1px solid var(--rule); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding: 8px max(16px, env(safe-area-inset-left, 0px));
+}
+nav.index .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+nav.index a {
+  white-space: nowrap; text-decoration: none; color: var(--muted); font-size: 0.85rem; padding: 4px 10px; border-radius: 99px;
+}
+nav.index a:hover { color: var(--ink); background: var(--accent-soft); }
+nav.index a.on { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+
+header.hero { padding-block: 48px 36px; display: grid; gap: 18px; }
+.hero .lead { font-size: 1.12rem; color: var(--muted); max-width: 64ch; }
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin-top: 10px; }
+.metric { background: var(--sheet); padding: 16px; display: grid; gap: 6px; align-content: start; }
+.metric .lbl { font-size: 0.82rem; color: var(--muted); }
+.metric .val { font-family: var(--display); font-size: 1.9rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.metric .val .from { color: var(--muted); font-weight: 500; font-size: 1.25rem; }
+.metric .val .arrow { color: var(--muted); font-size: 1.1rem; padding: 0 4px; }
+.metric .delta { font-family: var(--mono); font-size: 0.78rem; color: var(--pass); }
+.metric .split { display: flex; gap: 6px; flex-wrap: wrap; }
+
+section { padding-block: 44px; border-top: 1px solid var(--rule); scroll-margin-top: 56px; }
+.sec-head { display: grid; gap: 8px; margin-bottom: 22px; }
+.sec-head .ref { font-family: var(--mono); font-size: 0.74rem; color: var(--accent); letter-spacing: 0.04em; }
+.sheet { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; }
+
+/* chips */
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.74rem; font-weight: 600; padding: 2px 8px; border-radius: 99px; border: 1px solid currentColor; white-space: nowrap; line-height: 1.5; }
+.r-Kritikus { color: var(--crit); } .r-Magas { color: var(--high); } .r-Közepes { color: var(--med); } .r-Alacsony { color: var(--low); }
+.s-fixed { color: var(--pass); } .s-partial { color: var(--med); } .s-open { color: var(--warn); } .s-accepted { color: var(--muted); }
+
+/* stepper */
+.steps { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; position: relative; }
+.steps::before { content: ""; position: absolute; left: 4%; right: 4%; top: 17px; height: 2px; background: var(--rule); }
+.step { background: none; border: 0; padding: 0 4px; display: grid; justify-items: center; gap: 6px; text-align: center; position: relative; }
+.step .dot { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--sheet); border: 2px solid var(--rule); font-family: var(--mono); font-size: 0.85rem; font-weight: 500; transition: background .15s, border-color .15s; }
+.step .nm { font-size: 0.8rem; color: var(--muted); line-height: 1.25; }
+.step[aria-selected="true"] .dot { background: var(--accent); border-color: var(--accent); color: var(--sheet); }
+.step[aria-selected="true"] .nm { color: var(--ink); font-weight: 600; }
+.step:hover .dot { border-color: var(--accent); }
+.step-panel { margin-top: 22px; padding: 22px; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 24px; }
+.step-panel ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.step-panel .files { display: grid; gap: 8px; align-content: start; border-left: 1px solid var(--rule); padding-left: 20px; }
+.step-panel .files div { font-family: var(--mono); font-size: 0.8rem; overflow-wrap: anywhere; }
+.step-nav { display: flex; gap: 8px; margin-top: 14px; }
+.btn { border: 1px solid var(--rule); background: var(--sheet); border-radius: 5px; padding: 6px 14px; font-size: 0.88rem; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn:disabled { opacity: .4; cursor: default; color: inherit; border-color: var(--rule); }
+
+/* toggle */
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--sheet); }
+.seg button { border: 0; background: none; padding: 7px 16px; font-size: 0.88rem; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--sheet); font-weight: 600; }
+.toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+
+/* environment */
+.host { padding: 18px; display: grid; gap: 14px; }
+.host-top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.outside { border: 1px dashed var(--rule); border-radius: 6px; padding: 10px 12px; display: grid; gap: 8px; }
+.ports { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.port { font-family: var(--mono); font-size: 0.8rem; text-align: center; padding: 6px; border-radius: 4px; border: 1px solid; }
+.port.bad { color: var(--crit); border-color: var(--crit); }
+.port.ok { color: var(--pass); border-color: var(--pass); }
+.port.none { color: var(--muted); border-color: transparent; }
+.ctrs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ctr { border: 1px solid var(--rule); border-radius: 6px; padding: 12px; display: grid; gap: 8px; align-content: start; background: var(--paper); text-align: left; }
+.ctr h3 { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.ctr dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; font-size: 0.82rem; }
+.ctr dt { color: var(--muted); }
+.ctr dd { margin: 0; font-family: var(--mono); font-size: 0.78rem; overflow-wrap: anywhere; }
+.ctr dd.bad { color: var(--crit); }
+.ctr dd.ok { color: var(--pass); }
+.nets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 10px; }
+.net { font-family: var(--mono); font-size: 0.76rem; padding: 5px 10px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
+.net.internal { background: transparent; border: 1px solid var(--accent); }
+.daemon { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 0.85rem; }
+.daemon .k { font-family: var(--mono); font-size: 0.76rem; padding: 2px 8px; border-radius: 4px; background: var(--code-bg); }
+.env-note { margin-top: 14px; font-size: 0.92rem; color: var(--muted); }
+
+/* findings */
+.find-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 20px; align-items: start; }
+.matrix { display: grid; grid-template-columns: 28px repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(86px, auto)) auto; gap: 4px; }
+.matrix .ylab { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 0.72rem; color: var(--muted); display: grid; place-items: center; text-transform: uppercase; letter-spacing: .06em; }
+.matrix .xlab { font-size: 0.72rem; color: var(--muted); text-align: center; text-transform: uppercase; letter-spacing: .06em; }
+.cell { border-radius: 5px; padding: 8px; display: flex; flex-wrap: wrap; gap: 5px; align-content: flex-start; position: relative; min-width: 0; }
+.cell .tag { position: absolute; right: 6px; bottom: 4px; font-size: 0.66rem; font-weight: 600; opacity: .8; }
+.cell.c-Kritikus { background: color-mix(in srgb, var(--crit) 16%, transparent); }
+.cell.c-Magas { background: color-mix(in srgb, var(--high) 14%, transparent); }
+.cell.c-Közepes { background: color-mix(in srgb, var(--med) 14%, transparent); }
+.cell.c-Alacsony { background: color-mix(in srgb, var(--low) 12%, transparent); }
+.fid { font-family: var(--mono); font-size: 0.78rem; font-weight: 500; border: 1px solid var(--rule); background: var(--sheet); border-radius: 4px; padding: 2px 6px; }
+.fid[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.fid.fixed-view { text-decoration: line-through; opacity: .55; }
+.axis-note { font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+.detail { padding: 20px; display: grid; gap: 14px; }
+.detail .top { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.detail .kv { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px 14px; font-size: 0.92rem; }
+.detail .kv dt { color: var(--muted); font-size: 0.84rem; }
+.detail .kv dd { margin: 0; }
+.flist { margin-top: 22px; display: grid; }
+.frow { display: grid; grid-template-columns: 56px minmax(0, 1fr) 90px 130px; gap: 10px; align-items: center; padding: 8px 10px; border: 0; border-bottom: 1px solid var(--rule); background: none; text-align: left; }
+.frow:hover { background: var(--accent-soft); }
+.frow[aria-pressed="true"] { background: var(--accent-soft); }
+.frow .id { font-family: var(--mono); font-size: 0.82rem; }
+.frow .t { font-size: 0.9rem; }
+
+/* configs */
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--rule); margin-bottom: 14px; overflow-x: auto; }
+.tabs button { border: 0; background: none; padding: 8px 14px; font-size: 0.88rem; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.diff { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.codebox { min-width: 0; }
+.codebox .cap { display: flex; justify-content: space-between; gap: 8px; font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+pre.code { margin: 0; background: var(--code-bg); border: 1px solid var(--rule); border-radius: 6px; padding: 10px 0; overflow-x: auto; font-family: var(--mono); font-size: 0.78rem; line-height: 1.6; }
+pre.code .ln { display: flex; gap: 10px; padding: 0 12px; white-space: pre; min-width: max-content; }
+pre.code .ln.hl { background: var(--hl); }
+pre.code .ln.bad { color: var(--crit); }
+pre.code .cm { color: var(--muted); }
+pre.code .mt { border: 0; background: var(--accent); color: var(--sheet); font-family: var(--mono); font-size: 0.68rem; padding: 0 5px; border-radius: 3px; line-height: 1.5; align-self: center; }
+.code-hint { font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
+
+/* charts */
+.charts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.chart { padding: 18px; display: grid; gap: 12px; align-content: start; }
+.bars { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 10px; align-items: center; }
+.bar-row .lbl { font-size: 0.82rem; line-height: 1.25; }
+.bar-pair { display: grid; gap: 3px; }
+.bar { height: 14px; border-radius: 0 3px 3px 0; display: flex; align-items: center; min-width: 2px; transition: width .35s ease; }
+.bar span { font-family: var(--mono); font-size: 0.7rem; margin-left: calc(100% + 6px); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bar.v1 { background: color-mix(in srgb, var(--muted) 45%, transparent); }
+.bar.v2 { background: var(--accent); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.78rem; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.stack { display: flex; height: 30px; border-radius: 4px; overflow: hidden; gap: 2px; }
+.stack div { display: grid; place-items: center; font-family: var(--mono); font-size: 0.72rem; color: var(--sheet); min-width: 0; }
+.stack-legend { display: grid; gap: 4px; font-size: 0.82rem; }
+.stack-legend div { display: flex; gap: 8px; align-items: center; }
+.stack-legend i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+table.cmp { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.cmp th, table.cmp td { padding: 7px 10px; border-bottom: 1px solid var(--rule); text-align: left; }
+table.cmp th { font-size: 0.76rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+table.cmp td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+table.cmp th.n { text-align: right; }
+.tbl-wrap { overflow-x: auto; }
+
+/* tool errors */
+.terr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.tcard { padding: 16px; display: grid; gap: 10px; align-content: start; }
+.tcard .hd { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.tcard .vs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.tcard .vs > div { padding: 8px 10px; border-radius: 4px; background: var(--paper); font-size: 0.86rem; }
+.tcard .vs .k { font-size: 0.7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); display: block; margin-bottom: 2px; }
+.tcard .why { font-size: 0.88rem; color: var(--muted); }
+
+/* evidence */
+.pipe { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.pipe button { border: 1px solid var(--rule); background: var(--sheet); border-radius: 6px; padding: 10px; text-align: left; display: grid; gap: 4px; align-content: start; }
+.pipe button .n { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+.pipe button .t { font-size: 0.86rem; font-weight: 600; line-height: 1.25; }
+.pipe button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.pipe-detail { margin-top: 12px; padding: 16px; font-size: 0.92rem; display: grid; gap: 8px; }
+.cmd { display: flex; gap: 8px; align-items: center; background: var(--code-bg); border: 1px solid var(--rule); border-radius: 6px; padding: 8px 10px; margin-top: 16px; }
+.cmd code { background: none; padding: 0; flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; }
+
+/* remaining */
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.list { display: grid; gap: 0; }
+.li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 0.9rem; align-items: baseline; }
+.li .id { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+ul.plain { margin: 0; padding-left: 18px; display: grid; gap: 8px; font-size: 0.92rem; }
+.callout { margin-top: 18px; padding: 14px 16px; border-left: 3px solid var(--accent); background: var(--sheet); border-radius: 0 6px 6px 0; font-size: 0.92rem; }
+
+/* repo map */
+.tree { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 20px; }
+.tree-list { padding: 8px; display: grid; }
+.tree-list button { border: 0; background: none; text-align: left; padding: 6px 10px; border-radius: 4px; font-family: var(--mono); font-size: 0.82rem; display: flex; justify-content: space-between; gap: 10px; }
+.tree-list button:hover { background: var(--accent-soft); }
+.tree-list button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.tree-list .when { font-family: var(--body); font-size: 0.72rem; color: var(--muted); }
+.tree-detail { padding: 18px; display: grid; gap: 10px; align-content: start; font-size: 0.93rem; }
+
+footer { padding-block: 30px 50px; border-top: 1px solid var(--rule); font-size: 0.85rem; color: var(--muted); }
+
+@media (max-width: 860px) {
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .step-panel, .find-grid, .charts, .two, .tree, .diff { grid-template-columns: minmax(0, 1fr); }
+  .step-panel .files { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 14px; }
+  .pipe { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .terr { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .steps { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 14px; }
+  .steps::before { display: none; }
+  .ctrs, .ports, .nets { grid-template-columns: minmax(0, 1fr); }
+  .net { grid-column: auto !important; }
+  .port.none { display: none; }
+  .frow { grid-template-columns: 50px minmax(0, 1fr); }
+  .frow .chip { justify-self: start; }
+  .bar-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .pipe { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .detail .kv { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .detail .kv dd { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+
+<nav class="index" aria-label="Sections">
+  <div class="wrap" id="navlinks">
+    <a href="#process">Process</a>
+    <a href="#environment">Environment</a>
+    <a href="#findings">Findings</a>
+    <a href="#configs">Configs</a>
+    <a href="#results">Results</a>
+    <a href="#tool">Tool errors</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#remaining">What's left</a>
+    <a href="#repo">Repo map</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">IT Audit pair project · CIS Docker Benchmark v1.6.0 · branch cis-docker-audit</div>
+    <h1>Audit a Docker stack, fix it, measure it again</h1>
+    <p class="lead">A small booking web app runs in three containers: Nginx, Flask and PostgreSQL. It was first deployed with Docker's defaults, with the database set up like the official postgres image's example. We audited it against the CIS Docker Benchmark, hardened it from the audit's action plan, and then ran the same measurements again. Each section below explains one part and points to the chapter of <code>docs/jelentes.md</code> it comes from.</p>
+    <div class="metrics">
+      <div class="metric"><span class="lbl">docker-bench score</span><span class="val"><span class="from">5</span><span class="arrow">→</span>61</span><span class="delta">+56</span></div>
+      <div class="metric"><span class="lbl">WARN results (CIS 1-6)</span><span class="val"><span class="from">29</span><span class="arrow">→</span>4</span><span class="delta">−86%</span></div>
+      <div class="metric"><span class="lbl">High + critical CVEs (Trivy)</span><span class="val"><span class="from">454</span><span class="arrow">→</span>0</span><span class="delta">−100%</span></div>
+      <div class="metric"><span class="lbl">Findings in v1</span><span class="val">13</span>
+        <span class="split"><span class="chip r-Kritikus">1 critical</span><span class="chip r-Magas">4 high</span><span class="chip r-Közepes">4 medium</span><span class="chip r-Alacsony">4 low</span></span></div>
+    </div>
+  </header>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="sec-head">
+      <span class="ref">REPORT §2 AUDIT PLAN · §2.6 TIMELINE</span>
+      <h2>How the audit ran</h2>
+      <p class="muted">Seven phases, in order. Pick one to see what happened and which files it produced.</p>
+    </div>
+    <div class="steps" role="tablist" id="steps"></div>
+    <div class="sheet step-panel" id="stepPanel" role="tabpanel"></div>
+    <div class="step-nav"><button class="btn" id="prevStep">Previous phase</button><button class="btn" id="nextStep">Next phase</button></div>
+  </section>
+
+  <!-- ENVIRONMENT -->
+  <section id="environment">
+    <div class="sec-head">
+      <span class="ref">REPORT §3 THE AUDITED SYSTEM · infra/v1, infra/v2</span>
+      <h2>The environment, before and after</h2>
+      <p class="muted">Same app code in both versions. Only the runtime around it changed. Switch versions to compare.</p>
+    </div>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Version">
+        <button id="envV1" aria-pressed="true">v1 · defaults</button>
+        <button id="envV2" aria-pressed="false">v2 · hardened</button>
+      </div>
+      <span class="muted" id="envCaption" style="font-size:.88rem"></span>
+    </div>
+    <div class="sheet host">
+      <div class="host-top">
+        <h3>Host</h3>
+        <span class="mono muted" style="font-size:.78rem">Manjaro Linux, native · kernel 6.18.33 · AppArmor on · Docker Engine 29.8.2 · Compose v5.1.0</span>
+      </div>
+      <div class="daemon" id="daemonRow"></div>
+      <div class="outside">
+        <span class="eyebrow">Published ports (reachable from outside the containers)</span>
+        <div class="ports" id="portsRow"></div>
+      </div>
+      <div class="ctrs" id="ctrRow"></div>
+      <div class="nets" id="netRow"></div>
+    </div>
+    <p class="env-note" id="envNote"></p>
+  </section>
+
+  <!-- FINDINGS -->
+  <section id="findings">
+    <div class="sec-head">
+      <span class="ref">REPORT §2.5 RISK METHOD · §6 FINDINGS · §7.1 ACTION PLAN</span>
+      <h2>What we found</h2>
+      <p class="muted">Each finding is placed by impact and likelihood. The cell decides the risk level, using the 3×3 matrix from the audit plan. Pick a finding to see the evidence, the fix and the result.</p>
+    </div>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Show state">
+        <button id="fV1" aria-pressed="true">Risk in v1</button>
+        <button id="fV2" aria-pressed="false">After the fixes</button>
+      </div>
+      <span class="muted" style="font-size:.88rem" id="fCaption">All 13 findings as found in v1.</span>
+    </div>
+    <div class="find-grid">
+      <div>
+        <div class="matrix" id="matrix"></div>
+        <p class="axis-note">Rows: impact (damage to confidentiality, integrity or availability). Columns: likelihood (how exploitable: network reach, preconditions).</p>
+      </div>
+      <div class="sheet detail" id="fDetail" aria-live="polite"></div>
+    </div>
+    <div class="flist" id="flist"></div>
+  </section>
+
+  <!-- CONFIGS -->
+  <section id="configs">
+    <div class="sec-head">
+      <span class="ref">infra/v1 → infra/v2 · REPORT §7.1</span>
+      <h2>What the fixes look like in config</h2>
+      <p class="muted">Most fixes are a few lines in the compose file or a Dockerfile. The highlighted lines in v1 are the problems. The tags in v2 name the finding each line fixes; select one to open that finding.</p>
+    </div>
+    <div class="tabs" role="tablist" id="cfgTabs"></div>
+    <div class="diff" id="cfgDiff"></div>
+    <p class="code-hint" id="cfgHint"></p>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <div class="sec-head">
+      <span class="ref">REPORT §4.2 · §4.3 · §4.4 · §7.2 FOLLOW-UP</span>
+      <h2>Measured results</h2>
+      <p class="muted">Both runs used docker-bench-security commit 154869d and Trivy 0.75.0. 117 checks ran; chapter 7 (Swarm) is not applicable.</p>
+    </div>
+    <div class="charts">
+      <div class="sheet chart">
+        <div class="toolbar" style="margin:0;justify-content:space-between">
+          <h3>docker-bench by CIS chapter</h3>
+          <div class="seg" role="group" aria-label="Metric">
+            <button id="mWarn" aria-pressed="true">WARN</button>
+            <button id="mPass" aria-pressed="false">PASS</button>
+          </div>
+        </div>
+        <div class="legend"><span><i style="background:color-mix(in srgb, var(--muted) 45%, transparent)"></i>v1</span><span><i style="background:var(--accent)"></i>v2</span></div>
+        <div class="bars" id="cisBars"></div>
+        <p class="muted" style="font-size:.84rem" id="cisNote"></p>
+      </div>
+      <div class="sheet chart">
+        <h3>High + critical CVEs per image</h3>
+        <div class="legend"><span><i style="background:color-mix(in srgb, var(--muted) 45%, transparent)"></i>v1 (latest, Debian)</span><span><i style="background:var(--accent)"></i>v2 (pinned, Alpine)</span></div>
+        <div class="bars" id="cveBars"></div>
+        <p class="muted" style="font-size:.84rem">In v1 only 39 of the 454 had a fixed package version available. Most came from packages the full Debian base images ship but the app never uses, such as compilers and dev libraries (CIS 4.3). Three sources survive a switch to Alpine: gosu in the postgres image, pip's bundled packages, and libexpat/curl/zlib. The v2 Dockerfiles handle them directly, and v2 has none left.</p>
+      </div>
+    </div>
+    <div class="sheet chart" style="margin-top:20px">
+      <h3>Where the 4 remaining WARNs come from</h3>
+      <div class="stack" id="warnStack"></div>
+      <div class="stack-legend" id="warnLegend"></div>
+    </div>
+    <div class="sheet" style="margin-top:20px;padding:6px 8px">
+      <div class="tbl-wrap">
+        <table class="cmp">
+          <thead><tr><th>Metric</th><th class="n">v1</th><th class="n">v2</th><th class="n">Change</th></tr></thead>
+          <tbody>
+            <tr><td>docker-bench score</td><td class="n">5</td><td class="n">61</td><td class="n">+56</td></tr>
+            <tr><td>WARN (CIS 1-6)</td><td class="n">29</td><td class="n">4</td><td class="n">−86%</td></tr>
+            <tr><td>PASS (CIS 1-6)</td><td class="n">34</td><td class="n">66</td><td class="n">+94%</td></tr>
+            <tr><td>Trivy critical + high</td><td class="n">454</td><td class="n">0</td><td class="n">−100%</td></tr>
+            <tr><td>Trivy, all vulnerabilities</td><td class="n">3180</td><td class="n">3</td><td class="n">−99.9%</td></tr>
+            <tr><td>Trivy Dockerfile misconfigurations</td><td class="n">3</td><td class="n">0</td><td class="n">−100%</td></tr>
+            <tr><td>Published ports</td><td class="n">3 (0.0.0.0)</td><td class="n">1 (127.0.0.1)</td><td class="n">−2</td></tr>
+            <tr><td>Containers running as root</td><td class="n">3</td><td class="n">0</td><td class="n">−3</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOL ERRORS -->
+  <section id="tool">
+    <div class="sec-head">
+      <span class="ref">REPORT §5.1 - §5.3 AUDITOR REVIEW OF TOOL OUTPUT</span>
+      <h2>When the tool was wrong</h2>
+      <p class="muted">Every WARN was checked against <code>docker inspect</code>, config files and mount data, and suspicious PASS results against docker-bench's source code. Four checks out of 117 (2.2, 2.9, 5.15, 5.3) did not match reality. That is why every finding in the report rests on at least one independent piece of evidence.</p>
+    </div>
+    <div class="terr" id="terr"></div>
+    <div class="callout">The 5.4 check also deserves a note: it gives PASS in v1 because it only looks for capabilities that were <em>added</em>. The default capability set was still there. v2 drops all of them with <code>cap_drop: ALL</code>.</div>
+  </section>
+
+  <!-- EVIDENCE -->
+  <section id="evidence">
+    <div class="sec-head">
+      <span class="ref">REPORT §4.1 EVIDENCE HANDLING · scripts/collect-evidence.sh</span>
+      <h2>How the evidence was collected</h2>
+      <p class="muted">One script collects everything into a new timestamped folder per run and refuses to overwrite an existing one. Select a stage to see what it records.</p>
+    </div>
+    <div class="pipe" id="pipe"></div>
+    <div class="sheet pipe-detail" id="pipeDetail"></div>
+    <div class="sheet" style="margin-top:20px;padding:6px 8px">
+      <div class="tbl-wrap">
+        <table class="cmp">
+          <thead><tr><th>Run folder in evidence/</th><th>What it is</th><th>Used as</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">2026-11-08T1402Z_v1</td><td>Baseline, v1 stack</td><td>Primary v1 evidence</td></tr>
+            <tr><td class="mono">2026-11-08T1406Z_v2</td><td>Intermediate v2 run, before every M-04 step was in place</td><td>Not used for evaluation</td></tr>
+            <tr><td class="mono">2026-11-08T1409Z_v2-functional</td><td>Functional test on the intermediate v2</td><td>Not used for evaluation</td></tr>
+            <tr><td class="mono">2026-11-08T1424Z_v2-dash</td><td>v2, docker-bench run under <code>dash</code></td><td>Proof of tool error T-1, not used for scoring</td></tr>
+            <tr><td class="mono">2026-11-08T1514Z_v2</td><td>v2 after the action plan</td><td>Primary v2 evidence</td></tr>
+            <tr><td class="mono">2026-11-08T1516Z_v2-functional</td><td>v2 functional and isolation test</td><td>Supporting evidence</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="cmd">
+      <code id="verifyCmd">cd evidence/2026-11-08T1514Z_v2 &amp;&amp; sha256sum -c SHA256SUMS</code>
+      <button class="btn" id="copyCmd">Copy</button>
+    </div>
+    <p class="muted" style="font-size:.84rem;margin-top:6px">Run this from the repo root to check that no file in a run has changed since it was collected.</p>
+  </section>
+
+  <!-- REMAINING -->
+  <section id="remaining">
+    <div class="sec-head">
+      <span class="ref">REPORT §7.1 · §7.3 · §8 LIMITATIONS</span>
+      <h2>What's left, and why</h2>
+    </div>
+    <div class="two">
+      <div>
+        <h3 style="margin-bottom:8px">Not fully fixed in v2</h3>
+        <div class="list">
+          <div class="li"><span class="id">M-10</span><span>2.13 passes through journald, but there is no remote log collection</span><span class="chip s-partial">Partial</span></div>
+          <div class="li"><span class="id">M-12</span><span>No separate partition for Docker data; a single-user host, and repartitioning the encrypted btrfs root would be out of proportion</span><span class="chip s-accepted">Accepted</span></div>
+          <div class="li"><span class="id">M-13</span><span>No authorization plugin or content trust; one admin on the host, and digest pinning stands in for content trust</span><span class="chip s-accepted">Accepted</span></div>
+        </div>
+        <h3 style="margin:22px 0 8px">Limits of the audit</h3>
+        <ul class="plain">
+          <li>The host is a single-user Linux workstation (Manjaro), not a dedicated server.</li>
+          <li>AppArmor was switched on while preparing the host. Manjaro leaves it off by default; Ubuntu has it on.</li>
+          <li>It is a snapshot of two points in time; it doesn't test whether controls keep working over a period.</li>
+          <li>Auditor and auditee are on the same team, so independence is limited.</li>
+          <li>No interview was held: the team played the sysadmin role, so the interview questions were covered by document review and observation.</li>
+          <li>The application's own source code was out of scope.</li>
+          <li>Publishing the database port in v1 was a convenience choice, not a default, so M-05's severity partly comes from that choice.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px">New action items</h3>
+        <div class="list" id="newActions"></div>
+      </div>
+    </div>
+    <div class="callout">There is no AppArmor finding. With AppArmor active on the host, Docker applied its <code>docker-default</code> profile to every container automatically, so CIS 5.2 already passed in v1. You can see it in <code>docker inspect</code> as <code>"AppArmorProfile": "docker-default"</code>.</div>
+  </section>
+
+  <!-- REPO -->
+  <section id="repo">
+    <div class="sec-head">
+      <span class="ref">README.md</span>
+      <h2>Repo map</h2>
+      <p class="muted">Where each piece lives. Select a path.</p>
+    </div>
+    <div class="tree">
+      <div class="sheet tree-list" id="treeList"></div>
+      <div class="sheet tree-detail" id="treeDetail"></div>
+    </div>
+  </section>
+
+  <footer>
+    Built from the <code>cis-docker-audit</code> branch: <code>docs/jelentes.md</code>, <code>infra/</code>, <code>scripts/</code> and the runs in <code>evidence/</code>. Measurements taken 2026-11-08 (v1 14:02 UTC, v2 15:14 UTC).
+  </footer>
+</div>
+
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, attrs = {}, html = "") => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); e.innerHTML = html; return e; };
+const RISK_EN = { Kritikus: "Critical", Magas: "High", "Közepes": "Medium", Alacsony: "Low" };
+const LVL_EN = { H: "High", M: "Medium", L: "Low" };
+const DASHRUN = "2026-11-08T1424Z_v2-dash";
+
+/* ---------- PROCESS ---------- */
+const STEPS = [
+  { nm: "Plan", title: "Plan the audit", ref: "§2",
+    body: ["Set the goal: an independent, tool-backed assessment of how well the container environment meets the CIS Docker Benchmark, with a risk rating and an action plan for each gap, then a re-measurement to prove the fixes.",
+      "Criteria: CIS Docker Benchmark v1.6.0, Level 1 profile, as implemented by docker-bench-security commit 154869d. Trivy covers CIS 4.4 (scan and rebuild images). Findings are also mapped to NIST CSF categories.",
+      "Out of scope: Swarm (CIS chapter 7), the app's source code, the hypervisor, organisational controls and BCP/DRP, penetration testing.",
+      "Risk = impact × likelihood on a three-level scale. Treatment is fix, accept or transfer."],
+    files: ["docs/audit-terv.md"] },
+  { nm: "Prepare", title: "Build the v1 environment", ref: "§2.6 · §3.1",
+    body: ["setup-host.sh installs Docker Engine, Trivy, docker-bench-security (pinned to commit 154869d), auditd and AppArmor, and adds the user to the docker group. It supports Ubuntu (apt) and Manjaro/Arch (pacman).",
+      "enable-apparmor-grub.sh switches AppArmor on in the kernel, as Ubuntu has it by default. auditd runs, but with no Docker rules yet.",
+      "infra/v1 deploys the stack with Docker's defaults and the settings from the official postgres example (report §3.1 cites the sources): latest images, no USER, passwords in compose.yaml, every port published, restart: always, no daemon.json.",
+      "The rule for v1: don't break anything on purpose. Whatever ends up insecure by default stays that way, and whatever happens to be right is recorded as a PASS."],
+    files: ["scripts/setup-host.sh", "scripts/enable-apparmor-grub.sh", "infra/v1/compose.yaml", "infra/v1/Dockerfile", "infra/v1/nginx.conf"] },
+  { nm: "Measure v1", title: "First measurement", ref: "§4.3",
+    body: ["collect-evidence.sh v1 infra/v1 ran at 14:02 UTC on 2026-11-08.",
+      "It ran docker-bench (117 checks), Trivy image and config scans, docker inspect and ps, and copied the config files, then hashed every file into SHA256SUMS.",
+      "An earlier observation from project preparation (2026-11-07): the first v1 build failed. python:latest had moved to Python 3.15, which had no binary wheel for the pinned psycopg-binary==3.2.10. An unpinned base image broke a rebuild with no code change."],
+    files: ["scripts/collect-evidence.sh", "evidence/2026-11-08T1402Z_v1/"] },
+  { nm: "Evaluate", title: "Evaluate and rate", ref: "§5 · §6",
+    body: ["Every WARN was checked against independent evidence (inspect output, config files, mount data). PASS results were spot-checked, and docker-bench's source was read where a result looked wrong.",
+      "That review found four checks with wrong results (see Tool errors).",
+      "13 findings, each with impact, likelihood, risk, CIS reference and NIST CSF category: 1 critical, 4 high, 4 medium, 4 low. Each got a recommended control (preventive, detective or mitigating) and a treatment."],
+    files: ["docs/jelentes.md §5-§6", "docs/templates/megallapitas-sablon.md"] },
+  { nm: "Fix", title: "Deploy v2 from the action plan", ref: "§7.1",
+    body: ["deploy-v2.sh stops v1, installs daemon.json and the auditd rules, restarts Docker, generates the secrets with openssl rand -hex 24 (outside git and outside the images), then builds and starts infra/v2.",
+      "The app code did not change. Only the Dockerfiles, compose.yaml and host config did.",
+      "auditd loaded 12 Docker rules. The 13th points at /etc/containerd/config.toml, which doesn't exist on this host."],
+    files: ["scripts/deploy-v2.sh", "infra/v2/compose.yaml", "infra/v2/*.Dockerfile", "infra/v2/host/daemon.json", "infra/v2/host/docker.rules"] },
+  { nm: "Re-measure", title: "Follow-up measurement", ref: "§4.4 · §5.2 · §7.2",
+    body: ["The v2 run at 15:14 UTC is the primary v2 evidence: score 61, 4 WARN left, 0 high or critical vulnerabilities.",
+      "An earlier intermediate v2 run (14:06), taken before every M-04 step was in place, stays in evidence/ but isn't used for evaluation.",
+      "Redeploying v2 exposed a bug in deploy-v2.sh: it regenerated the secrets on every deploy while the database kept its first password. The script now keeps secrets in /opt/booking/secrets.",
+      "functional-test.sh then checked the live stack: booking 302, admin 401 without or with the old password and 200 with the new secret, no port reachable on the LAN address, a read-only root filesystem, and app uid 10001 mapped to host uid 110001.",
+      "A separate v2 run with docker-bench under dash reproduces tool error T-1."],
+    files: ["evidence/2026-11-08T1514Z_v2/", "evidence/2026-11-08T1516Z_v2-functional/", "scripts/functional-test.sh", "evidence/" + DASHRUN + "/"] },
+  { nm: "Report", title: "Report and slides", ref: "§1 · §8",
+    body: ["summarize.py compares two evidence runs. The report is written in Markdown and built into Word with build-report.js. The slides come from build-slides.js.",
+      "Deliverables: documentation (max 20 pages), presentation (max 10 slides), and the live demo."],
+    files: ["scripts/summarize.py", "scripts/build-report.js", "scripts/build-slides.js", "docs/jelentes.md → docs/jelentes.docx", "docs/prezentacio.pptx"] },
+];
+let step = 0;
+const stepsEl = $("#steps");
+STEPS.forEach((s, i) => {
+  const b = el("button", { class: "step", role: "tab", "aria-selected": "false", id: "step" + i }, `<span class="dot">${i + 1}</span><span class="nm">${s.nm}</span>`);
+  b.addEventListener("click", () => showStep(i));
+  stepsEl.appendChild(b);
+});
+function showStep(i) {
+  step = i;
+  [...stepsEl.children].forEach((b, j) => b.setAttribute("aria-selected", j === i));
+  const s = STEPS[i];
+  $("#stepPanel").innerHTML = `<div style="display:grid;gap:12px"><span class="eyebrow">Phase ${i + 1} of 7 · report ${s.ref}</span><h3>${s.title}</h3><ul>${s.body.map(t => `<li>${t}</li>`).join("")}</ul></div>
+    <div class="files"><span class="eyebrow">Files</span>${s.files.map(f => `<div>${f}</div>`).join("")}</div>`;
+  $("#prevStep").disabled = i === 0;
+  $("#nextStep").disabled = i === STEPS.length - 1;
+}
+$("#prevStep").onclick = () => step > 0 && showStep(step - 1);
+$("#nextStep").onclick = () => step < STEPS.length - 1 && showStep(step + 1);
+showStep(0);
+
+/* ---------- ENVIRONMENT ---------- */
+const ENV = {
+  v1: {
+    caption: "Docker defaults plus the official postgres example; nothing broken on purpose.",
+    daemon: `<span class="muted">Docker daemon:</span> <span class="k" style="color:var(--crit)">no /etc/docker/daemon.json, all defaults</span> <span class="muted">auditd:</span> <span class="k" style="color:var(--crit)">running, no Docker rules</span>`,
+    ports: [["bad", "0.0.0.0:80 → proxy"], ["bad", "0.0.0.0:8000 → app"], ["bad", "0.0.0.0:5432 → db"]],
+    ctrs: [
+      { n: "proxy", role: "Nginx", rows: [["image", "nginx:latest (1.31.8)", "bad"], ["user", "root", "bad"], ["rootfs", "writable", "bad"], ["caps", "default set", "bad"], ["limits", "none", "bad"], ["health", "none", "bad"], ["apparmor", "docker-default", "ok"]] },
+      { n: "app", role: "Flask + gunicorn", rows: [["image", "python:latest (3.15.2)", "bad"], ["user", "root", "bad"], ["secrets", "DATABASE_URL, ADMIN_PASSWORD in env", "bad"], ["rootfs", "writable", "bad"], ["caps", "default set", "bad"], ["limits", "none", "bad"], ["apparmor", "docker-default", "ok"]] },
+      { n: "db", role: "PostgreSQL", rows: [["image", "postgres:latest (18.6)", "bad"], ["user", "root", "bad"], ["secrets", "POSTGRES_PASSWORD=booking123 in compose", "bad"], ["rootfs", "writable", "bad"], ["caps", "default set", "bad"], ["limits", "none", "bad"], ["apparmor", "docker-default", "ok"]] },
+    ],
+    nets: [{ name: "default network (all three)", col: "1 / 4", internal: false }],
+    note: "Anyone who can reach the host can talk to PostgreSQL directly on 5432 with a weak password from a plain-text file, and can bypass the proxy by going straight to the app on 8000. That combination is finding M-05, the only critical one. Publishing the db port was a convenience choice, not a Docker default, and the official postgres example doesn't do it.",
+  },
+  v2: {
+    caption: "Built from the action plan; every change maps to a finding.",
+    daemon: `<span class="muted">Docker daemon:</span> ${["icc: false", "userns-remap", "live-restore", "userland-proxy: false", "no-new-privileges", "log-driver: journald"].map(k => `<span class="k" style="color:var(--pass)">${k}</span>`).join("")} <span class="muted">auditd:</span> <span class="k" style="color:var(--pass)">12 Docker rules</span>`,
+    ports: [["ok", "127.0.0.1:8080 → proxy"], ["none", "app: not published"], ["none", "db: not published"]],
+    ctrs: [
+      { n: "proxy", role: "Nginx", rows: [["image", "nginx-unprivileged:alpine @sha256", "ok"], ["user", "nginx (101)", "ok"], ["rootfs", "read-only + tmpfs /tmp", "ok"], ["caps", "drop ALL, no-new-privileges", "ok"], ["limits", "128m mem, 512 cpu_shares, 200 pids", "ok"], ["health", "/nginx-health", "ok"], ["apparmor", "docker-default", "ok"]] },
+      { n: "app", role: "Flask + gunicorn", rows: [["image", "python:3.14-alpine @sha256", "ok"], ["user", "10001 (host uid 110001)", "ok"], ["secrets", "/run/secrets via *_FILE", "ok"], ["rootfs", "read-only + tmpfs /tmp", "ok"], ["caps", "drop ALL, setuid bits removed", "ok"], ["limits", "256m mem, 512 cpu_shares, 200 pids", "ok"], ["apparmor", "docker-default", "ok"]] },
+      { n: "db", role: "PostgreSQL", rows: [["image", "postgres:18.6-alpine @sha256", "ok"], ["user", "postgres (70)", "ok"], ["secrets", "POSTGRES_PASSWORD_FILE", "ok"], ["rootfs", "read-only + tmpfs", "ok"], ["caps", "drop ALL, no-new-privileges", "ok"], ["limits", "512m mem, 512 cpu_shares, 200 pids", "ok"], ["apparmor", "docker-default", "ok"]] },
+    ],
+    nets: [{ name: "frontend", col: "1 / 3", internal: false }, { name: "backend · internal: true", col: "2 / 4", internal: true }],
+    note: "Only the proxy is reachable, and only from the host itself. The app sits on both networks; the database sits only on the internal backend network, which has no route out. The functional test confirmed it: booking returns HTTP 302, admin 200 with the generated secret and 401 with the old password, no port answers on the LAN address, and writing to the root filesystem fails with Read-only file system. Thanks to userns-remap, the app's uid 10001 is uid 110001 on the host.",
+  },
+};
+function showEnv(v) {
+  $("#envV1").setAttribute("aria-pressed", v === "v1"); $("#envV2").setAttribute("aria-pressed", v === "v2");
+  const d = ENV[v];
+  $("#envCaption").textContent = d.caption;
+  $("#daemonRow").innerHTML = d.daemon;
+  $("#portsRow").innerHTML = d.ports.map(([c, t]) => `<div class="port ${c}">${t}</div>`).join("");
+  $("#ctrRow").innerHTML = d.ctrs.map(c => `<div class="ctr"><h3>${c.n}<span class="muted" style="font-family:var(--body);font-size:.78rem;font-weight:400">${c.role}</span></h3>
+    <dl>${c.rows.map(([k, val, cls]) => `<dt>${k}</dt><dd class="${cls}">${val}</dd>`).join("")}</dl></div>`).join("");
+  $("#netRow").innerHTML = d.nets.map(n => `<div class="net ${n.internal ? "internal" : ""}" style="grid-column:${n.col}">${n.name}</div>`).join("");
+  $("#envNote").textContent = d.note;
+}
+$("#envV1").onclick = () => showEnv("v1"); $("#envV2").onclick = () => showEnv("v2");
+showEnv("v1");
+
+/* ---------- FINDINGS ---------- */
+// status: fixed | partial | accepted
+const F = [
+  { id: "M-05", t: "DB and app ports published on every interface, weak password", cis: "5.9, 5.14, 5.8", nist: "PR.AC-5", imp: "H", lik: "H", risk: "Kritikus", st: "fixed",
+    fact: "db port 5432 and app port 8000 were reachable on 0.0.0.0 and [::]. The DB password (booking123) was plain text in compose.yaml.",
+    why: "A network-reachable database with a weak password allows full leak or modification of personal data (names, e-mails). Reaching the app directly bypasses the proxy.",
+    fix: "Only the proxy publishes a port: 127.0.0.1:8080, an unprivileged port. The DB lives on the internal backend network.", res: "WARN → PASS", ctl: "Preventive" },
+  { id: "M-02", t: "Containers run as root", cis: "4.1", nist: "PR.AC-4", imp: "H", lik: "M", risk: "Magas", st: "fixed",
+    fact: "All three containers ran as UID 0; no USER instruction in any Dockerfile. Trivy config: DS-0002 (HIGH).",
+    why: "A code-execution bug in the app gives the attacker root inside the container, which makes a container escape more likely and more damaging.",
+    fix: "USER in every image: app 10001, db postgres (70), proxy nginx (101).", res: "WARN → PASS", ctl: "Preventive" },
+  { id: "M-03", t: "Passwords in plain text in compose and in the container environment", cis: "4.10", nist: "PR.DS-1, PR.AC-1", imp: "H", lik: "M", risk: "Magas", st: "fixed",
+    fact: "POSTGRES_PASSWORD, DATABASE_URL and ADMIN_PASSWORD were in the version-controlled compose.yaml and readable with docker inspect.",
+    why: "The secret reaches version control, logs, and anyone with Docker API access.",
+    fix: "Docker secrets mounted under /run/secrets, read through *_FILE variables. Secrets are generated at deploy time and never enter the repo.", res: "NOTE → compliant", ctl: "Preventive" },
+  { id: "M-04", t: "Unpinned latest images, 454 high/critical CVEs", cis: "4.2-4.4", nist: "ID.RA-1, PR.IP-12", imp: "M", lik: "H", risk: "Magas", st: "fixed",
+    fact: "latest tags; 18 critical and 436 high vulnerabilities. Most come from the bloated Debian bases, but 26 sit in the gosu binary and 5 in pip's bundled packages, which a switch to Alpine alone doesn't remove. During project preparation a latest tag change also broke a build.",
+    why: "Known vulnerabilities to exploit, builds that can't be reproduced, unexpected outages.",
+    fix: "Pinned version plus digest, minimal Alpine base images, gosu removed from the db image, pip removed from the app's runtime image, apk upgrade in the proxy build, Trivy scanning.", res: "454 → 0 high+critical", ctl: "Preventive",
+    note: "apk upgrade makes the proxy build depend on the build date; A-1 (weekly scan and rebuild) covers that." },
+  { id: "M-10", t: "Docker daemon on default settings", cis: "2.2, 2.9, 2.13-2.16", nist: "PR.PT-3", imp: "H", lik: "M", risk: "Magas", st: "fixed",
+    fact: "No /etc/docker/daemon.json: icc, userns, logging, no-new-privileges, live-restore and userland-proxy all at defaults.",
+    why: "Rated high mainly because of userns: without remapping, root in a container is root on the host, so a container escape means host compromise.",
+    fix: "daemon.json with icc: false, userns-remap, live-restore, userland-proxy: false, no-new-privileges, journald.", res: "7 WARN → all PASS", ctl: "Preventive",
+    note: "2.13 (logging) passes through journald, but there is no remote log collection, so it is only partly met (A-2)." },
+  { id: "M-01", t: "No audit rules for the Docker daemon and its files", cis: "1.1.3-1.1.18", nist: "DE.CM-3, PR.PT-1", imp: "M", lik: "M", risk: "Közepes", st: "fixed",
+    fact: "auditd was running, but auditctl -l returned No rules: nothing watched the Docker binaries or config.",
+    why: "Unauthorised changes to the Docker setup can't be traced afterwards.",
+    fix: "docker.rules in /etc/audit/rules.d: 12 watches loaded. The 13th targets /etc/containerd/config.toml, which doesn't exist on this host.", res: "8 WARN → PASS", ctl: "Detective" },
+  { id: "M-06", t: "No memory, CPU or PID limits", cis: "5.11, 5.12, 5.29", nist: "PR.DS-4", imp: "M", lik: "M", risk: "Közepes", st: "fixed",
+    fact: "All three containers ran without memory, CPU or PID limits.", why: "One runaway or attacked container can starve the host and the other containers.",
+    fix: "mem_limit per service, cpu_shares: 512, pids_limit: 200.", res: "WARN → PASS", ctl: "Preventive" },
+  { id: "M-07", t: "Writable root filesystem", cis: "5.13", nist: "PR.DS-6", imp: "M", lik: "M", risk: "Közepes", st: "fixed",
+    fact: "Every container's root filesystem was writable.", why: "An attacker can drop tools or change binaries inside the container.",
+    fix: "read_only: true, with tmpfs only where the service needs to write.", res: "WARN → PASS", ctl: "Preventive" },
+  { id: "M-08", t: "No no-new-privileges, default capabilities", cis: "2.14, 5.26, 5.4", nist: "PR.AC-4", imp: "M", lik: "M", risk: "Közepes", st: "fixed",
+    fact: "No no-new-privileges and the default capability set on every container.", why: "Processes can gain privileges through setuid binaries and keep kernel capabilities they never need.",
+    fix: "cap_drop: ALL and no-new-privileges: true.", res: "WARN → PASS", ctl: "Preventive" },
+  { id: "M-09", t: "No HEALTHCHECK", cis: "4.6, 5.27", nist: "DE.CM-1", imp: "L", lik: "M", risk: "Alacsony", st: "fixed",
+    fact: "None of the images defined a HEALTHCHECK.", why: "A hung service looks healthy to Docker and to depends_on.",
+    fix: "HEALTHCHECK in all three images (/healthz, /nginx-health, pg_isready).", res: "WARN → PASS", ctl: "Detective" },
+  { id: "M-11", t: "restart: always policy", cis: "5.15", nist: "PR.PT-5", imp: "L", lik: "M", risk: "Alacsony", st: "fixed",
+    fact: "Every service used restart: always.", why: "A crashing container restarts forever, which can hide faults and load the host.",
+    fix: "restart: on-failure:5.", res: "PASS* → PASS", ctl: "Mitigating", note: "* The tool passed v1 by mistake (T-2)." },
+  { id: "M-12", t: "No separate partition for Docker data", cis: "1.1.1", nist: "PR.DS-4", imp: "M", lik: "L", risk: "Alacsony", st: "accepted",
+    fact: "findmnt shows /var/lib/docker on the root filesystem (a btrfs subvolume on a LUKS-encrypted device).", why: "Containers filling the disk can take down the host.",
+    fix: "Separate partition for /var/lib/docker.", res: "WARN → WARN", ctl: "Mitigating", note: "Accepted: single-user educational host; repartitioning the encrypted btrfs root would be out of proportion." },
+  { id: "M-13", t: "No authorization plugin or content trust", cis: "2.12, 4.5", nist: "PR.AC-4, PR.DS-6", imp: "L", lik: "L", risk: "Alacsony", st: "accepted",
+    fact: "No authorization plugin; Docker Content Trust off. The only docker group member is the administrator (1.1.2).", why: "Every docker group member has full API control; image signatures aren't checked.",
+    fix: "Accepted: one administrator. Digest pinning protects image integrity as a compensating control.", res: "WARN → WARN", ctl: "Preventive" },
+];
+const ST = { fixed: ["s-fixed", "Fixed"], partial: ["s-partial", "Partial"], accepted: ["s-accepted", "Accepted"] };
+const MATRIX = { H: { L: "Közepes", M: "Magas", H: "Kritikus" }, M: { L: "Alacsony", M: "Közepes", H: "Magas" }, L: { L: "Alacsony", M: "Alacsony", H: "Közepes" } };
+let sel = "M-05", fView = "v1";
+function renderMatrix() {
+  const m = $("#matrix"); m.innerHTML = "";
+  ["H", "M", "L"].forEach((imp, r) => {
+    if (r === 0) m.appendChild(el("div", { class: "ylab", style: "grid-row: 1 / 4" }, "Impact ↑"));
+    ["L", "M", "H"].forEach(lik => {
+      const risk = MATRIX[imp][lik];
+      const c = el("div", { class: `cell c-${risk}`, title: `Impact ${LVL_EN[imp]}, likelihood ${LVL_EN[lik]}: ${RISK_EN[risk]}` });
+      F.filter(f => f.imp === imp && f.lik === lik).forEach(f => {
+        const gone = fView === "v2" && f.st === "fixed";
+        const b = el("button", { class: "fid" + (gone ? " fixed-view" : ""), "aria-pressed": f.id === sel, "aria-label": `${f.id}: ${f.t}` }, f.id);
+        b.onclick = () => select(f.id);
+        c.appendChild(b);
+      });
+      c.appendChild(el("span", { class: `tag r-${risk}` }, `${LVL_EN[imp][0]}×${LVL_EN[lik][0]} ${RISK_EN[risk]}`));
+      m.appendChild(c);
+    });
+  });
+  m.appendChild(el("div"));
+  ["Low", "Medium", "High"].forEach(x => m.appendChild(el("div", { class: "xlab" }, x)));
+}
+function renderList() {
+  const l = $("#flist"); l.innerHTML = "";
+  F.forEach(f => {
+    const [cls, lbl] = ST[f.st];
+    const b = el("button", { class: "frow", "aria-pressed": f.id === sel },
+      `<span class="id">${f.id}</span><span class="t">${f.t}</span><span class="chip r-${f.risk}">${RISK_EN[f.risk]}</span><span class="chip ${cls}">${lbl}</span>`);
+    b.onclick = () => select(f.id);
+    l.appendChild(b);
+  });
+}
+function renderDetail() {
+  const f = F.find(x => x.id === sel); const [cls, lbl] = ST[f.st];
+  $("#fDetail").innerHTML = `<div class="top"><span class="mono" style="font-weight:600">${f.id}</span><span class="chip r-${f.risk}">${RISK_EN[f.risk]} risk</span><span class="chip ${cls}">${lbl}</span></div>
+    <h3>${f.t}</h3>
+    <dl class="kv">
+      <dt>Found in v1</dt><dd>${f.fact}</dd>
+      <dt>Why it matters</dt><dd>${f.why}</dd>
+      <dt>Fix in v2</dt><dd>${f.fix}</dd>
+      <dt>Tool result</dt><dd class="mono" style="font-size:.84rem">${f.res}</dd>
+      ${f.note ? `<dt>Note</dt><dd>${f.note}</dd>` : ""}
+      <dt>Rating</dt><dd>Impact ${LVL_EN[f.imp]}, likelihood ${LVL_EN[f.lik]}. Control: ${f.ctl}.</dd>
+      <dt>References</dt><dd class="mono" style="font-size:.84rem">CIS ${f.cis} · NIST CSF ${f.nist}</dd>
+    </dl>`;
+}
+function select(id) { sel = id; renderMatrix(); renderList(); renderDetail(); }
+function setFView(v) {
+  fView = v; $("#fV1").setAttribute("aria-pressed", v === "v1"); $("#fV2").setAttribute("aria-pressed", v === "v2");
+  $("#fCaption").textContent = v === "v1" ? "All 13 findings as found in v1." : "Struck through: fixed in v2 (11 findings). Still shown: 2 accepted.";
+  renderMatrix();
+}
+$("#fV1").onclick = () => setFView("v1"); $("#fV2").onclick = () => setFView("v2");
+select("M-05");
+
+/* ---------- CONFIGS ---------- */
+// line: [text, tag?]  tag "!" marks a problem line in v1
+const CFG = [
+  { tab: "compose.yaml: db and app", file1: "infra/v1/compose.yaml", file2: "infra/v2/compose.yaml",
+    v1: [["app:"], ["  image: booking-app:v1"], ["  environment:"], ["    DATABASE_URL: postgresql://booking:booking123@db:5432/booking", "!"], ["    ADMIN_PASSWORD: admin123", "!"], ["  ports:"], ["    - \"8000:8000\"", "!"], ["  restart: always", "!"], [""], ["db:"], ["  image: postgres:latest", "!"], ["  environment:"], ["    POSTGRES_PASSWORD: booking123", "!"], ["  ports:"], ["    - \"5432:5432\"", "!"], ["  restart: always", "!"]],
+    v2: [["x-hardening: &hardening"], ["  read_only: true", "M-07"], ["  security_opt: [no-new-privileges:true]", "M-08"], ["  cap_drop: [ALL]", "M-08"], ["  restart: on-failure:5", "M-11"], ["  pids_limit: 200", "M-06"], ["  cpu_shares: 512", "M-06"], [""], ["app:"], ["  <<: *hardening"], ["  environment:"], ["    DB_PASSWORD_FILE: /run/secrets/db_password", "M-03"], ["    ADMIN_PASSWORD_FILE: /run/secrets/admin_password", "M-03"], ["  secrets: [db_password, admin_password]", "M-03"], ["  mem_limit: 256m", "M-06"], ["  networks: [frontend, backend]", "M-05"], [""], ["db:"], ["  <<: *hardening"], ["  environment:"], ["    POSTGRES_PASSWORD_FILE: /run/secrets/db_password", "M-03"], ["  mem_limit: 512m", "M-06"], ["  networks: [backend]", "M-05"], [""], ["networks:"], ["  backend:"], ["    internal: true", "M-05"]],
+    hint: "v2 puts the shared hardening in one YAML anchor (x-hardening) and merges it into every service, so no service can miss it." },
+  { tab: "proxy ports", file1: "infra/v1/compose.yaml", file2: "infra/v2/compose.yaml",
+    v1: [["proxy:"], ["  image: nginx:latest", "!"], ["  ports:"], ["    - \"80:80\"", "!"], ["  volumes:"], ["    - ./nginx.conf:/etc/nginx/conf.d/default.conf"], ["  restart: always", "!"]],
+    v2: [["proxy:"], ["  <<: *hardening"], ["  image: booking-proxy:v2"], ["  ports:"], ["    - \"127.0.0.1:8080:8080\"", "M-05"], ["  tmpfs: [/tmp]", "M-07"], ["  mem_limit: 128m", "M-06"], ["  networks: [frontend]", "M-05"], ["  depends_on:"], ["    app: { condition: service_healthy }", "M-09"]],
+    hint: "Port 8080 instead of 80 lets Nginx run without root: ports below 1024 need a privilege the container no longer has." },
+  { tab: "app Dockerfile", file1: "infra/v1/Dockerfile", file2: "infra/v2/app.Dockerfile",
+    v1: [["FROM python:latest", "!"], [""], ["WORKDIR /app"], ["COPY . ."], ["RUN pip install -r requirements.txt"], [""], ["EXPOSE 8000"], ["CMD gunicorn -b 0.0.0.0:8000 -w 2 app:app"], ["# no USER: runs as root", "!"], ["# no HEALTHCHECK", "!"]],
+    v2: [["FROM python:3.14-alpine@sha256:a18b20ad69e7…", "M-04"], ["RUN addgroup -S -g 10001 app && adduser -S -D -H -u 10001 -G app app", "M-02"], ["WORKDIR /app"], ["COPY requirements.txt ."], ["RUN pip install --no-cache-dir -r requirements.txt \\"], [" && python -m pip uninstall -y pip \\", "M-04"], [" && find / -xdev -perm /6000 -type f -exec chmod a-s {} +", "M-08"], ["COPY app.py ."], ["USER 10001:10001", "M-02"], ["EXPOSE 8000"], ["HEALTHCHECK --interval=30s … CMD wget -qO- http://127.0.0.1:8000/healthz", "M-09"], ["CMD [\"gunicorn\", \"-b\", \"0.0.0.0:8000\", \"-w\", \"2\", \"--worker-tmp-dir\", \"/tmp\", \"app:app\"]"]],
+    hint: "The find … chmod a-s line removes setuid/setgid bits (CIS 4.8). The v2 image also copies only what it needs (requirements.txt, app.py) instead of the whole directory." },
+  { tab: "daemon.json", file1: "/etc/docker/daemon.json (v1)", file2: "infra/v2/host/daemon.json",
+    v1: [["# file does not exist", "!"], ["# every daemon setting is the default", "!"]],
+    v2: [["{"], ["  \"icc\": false,", "M-10"], ["  \"live-restore\": true,", "M-10"], ["  \"userland-proxy\": false,", "M-10"], ["  \"no-new-privileges\": true,", "M-08"], ["  \"userns-remap\": \"default\",", "M-10"], ["  \"log-driver\": \"journald\",", "M-10"], ["  \"log-level\": \"info\""], ["}"]],
+    hint: "userns-remap is what turns root inside a container into an unprivileged user on the host. It is also why deploy-v2.sh makes the secret files readable by the remapped user." },
+  { tab: "auditd rules", file1: "auditctl -l (v1)", file2: "infra/v2/host/docker.rules",
+    v1: [["No rules", "!"]],
+    v2: [["-c"], ["-w /usr/bin/dockerd -k docker", "M-01"], ["-a exit,always -F path=/run/containerd -F perm=war -k docker", "M-01"], ["-w /var/lib/docker -k docker", "M-01"], ["-w /etc/docker -k docker", "M-01"], ["-w /lib/systemd/system/docker.service -k docker", "M-01"], ["-w /run/containerd/containerd.sock -k docker", "M-01"], ["-w /lib/systemd/system/docker.socket -k docker", "M-01"], ["-w /etc/docker/daemon.json -k docker", "M-01"], ["-w /usr/bin/containerd -k docker", "M-01"], ["-w /usr/bin/runc -k docker", "M-01"], ["# … 13 rules in total"]],
+    hint: "The -c line makes auditd keep loading the other rules when one fails. Here only the rule for /etc/containerd/config.toml failed, because that file doesn't exist on this host." },
+  { tab: "gosu, pip, apk", file1: "Trivy, v1", file2: "infra/v2/*.Dockerfile",
+    v1: [["postgres:latest  26 high/critical in gosu (Go stdlib)", "!"], ["booking-app:v1   5 high in pip's bundled packages", "!"], ["nginx:latest     libexpat, curl, zlib", "!"]],
+    v2: [["# db.Dockerfile"], ["RUN rm -f /usr/local/bin/gosu", "M-04"], [""], ["# app.Dockerfile"], [" && python -m pip uninstall -y pip \\", "M-04"], [""], ["# proxy.Dockerfile"], ["USER root"], ["RUN apk upgrade --no-cache", "M-04"], ["USER 101", "M-02"]],
+    hint: "These three sources are already in the v1 evidence and survive a switch to Alpine, so M-04's action plan handles them explicitly. The proxy switches to root only for the build step; the running container is still uid 101." },
+];
+let cfg = 0;
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+function codeHTML(lines) {
+  return lines.map(([t, tag]) => {
+    const isC = t.trim().startsWith("#");
+    const txt = isC ? `<span class="cm">${esc(t)}</span>` : esc(t) || " ";
+    if (tag === "!") return `<div class="ln hl bad">${txt}</div>`;
+    if (tag) return `<div class="ln"><span>${txt}</span><button class="mt" data-f="${tag}" title="Open finding ${tag}">${tag}</button></div>`;
+    return `<div class="ln">${txt}</div>`;
+  }).join("");
+}
+function showCfg(i) {
+  cfg = i;
+  [...$("#cfgTabs").children].forEach((b, j) => b.setAttribute("aria-selected", j === i));
+  const c = CFG[i];
+  $("#cfgDiff").innerHTML = `<div class="codebox"><div class="cap"><span>v1</span><span class="mono">${c.file1}</span></div><pre class="code">${codeHTML(c.v1)}</pre></div>
+    <div class="codebox"><div class="cap"><span>v2</span><span class="mono">${c.file2}</span></div><pre class="code">${codeHTML(c.v2)}</pre></div>`;
+  $("#cfgHint").textContent = c.hint;
+  $("#cfgDiff").querySelectorAll(".mt").forEach(b => b.onclick = () => { select(b.dataset.f); $("#findings").scrollIntoView(); });
+}
+CFG.forEach((c, i) => { const b = el("button", { role: "tab", "aria-selected": "false" }, c.tab); b.onclick = () => showCfg(i); $("#cfgTabs").appendChild(b); });
+showCfg(0);
+
+/* ---------- RESULTS ---------- */
+const CIS = [
+  ["1 Host configuration", 1, 9, 11, 1], ["2 Docker daemon", 6, 7, 12, 1], ["3 Daemon config files", 8, 0, 12, 0],
+  ["4 Images and build files", 1, 3, 4, 1], ["5 Container runtime", 18, 10, 27, 1], ["6 Security operations", 0, 0, 0, 0],
+];
+function bar(cls, val, max) { const w = max ? (val / max) * 82 : 0; return `<div class="bar ${cls}" style="width:${w}%"><span>${val}</span></div>`; }
+function showCis(metric) {
+  $("#mWarn").setAttribute("aria-pressed", metric === "warn"); $("#mPass").setAttribute("aria-pressed", metric === "pass");
+  const idx = metric === "warn" ? [2, 4] : [1, 3];
+  const max = Math.max(...CIS.flatMap(r => [r[idx[0]], r[idx[1]]]));
+  $("#cisBars").innerHTML = CIS.map(r => `<div class="bar-row"><span class="lbl">${r[0]}</span><div class="bar-pair">${bar("v1", r[idx[0]], max)}${bar("v2", r[idx[1]], max)}</div></div>`).join("");
+  $("#cisNote").innerHTML = metric === "warn"
+    ? "Totals: 29 → 4. In chapter 1 the auditd rules removed 8 WARNs; the one left is the separate partition (accepted, M-12)."
+    : "Totals: 34 → 66. Chapter 3 gains PASSes because /etc/docker and daemon.json now exist, so their ownership and permissions can be checked. INFO and NOTE results need manual review and don't count toward the score.";
+}
+$("#mWarn").onclick = () => showCis("warn"); $("#mPass").onclick = () => showCis("pass");
+showCis("warn");
+const CVE = [["app image", 15 + 278, 0, "v2: pip removed from the runtime image"], ["db image", 2 + 91, 0, "v2: unused gosu binary removed"], ["proxy image", 1 + 67, 0, "v2: apk upgrade during the build"]];
+const cmax = Math.max(...CVE.map(c => c[1]));
+$("#cveBars").innerHTML = CVE.map(([n, a, b, src]) => `<div class="bar-row"><span class="lbl">${n}<br><span class="muted" style="font-size:.72rem">${src}</span></span><div class="bar-pair">${bar("v1", a, cmax)}${bar("v2", b, cmax)}</div></div>`).join("");
+const WS = [["1.1.1 separate partition (M-12, accepted)", 1, "var(--muted)"], ["2.12 authorization plugin (M-13, accepted)", 1, "color-mix(in srgb, var(--muted) 70%, var(--paper))"], ["4.5 content trust (M-13, accepted)", 1, "color-mix(in srgb, var(--muted) 50%, var(--paper))"], ["5.9 the one needed proxy port (acceptable)", 1, "var(--pass)"]];
+$("#warnStack").innerHTML = WS.map(([n, v, c]) => `<div style="flex:${v};background:${c}" title="${n}: ${v}">${v}</div>`).join("");
+$("#warnLegend").innerHTML = WS.map(([n, v, c]) => `<div><i style="background:${c}"></i><span>${n}</span></div>`).join("");
+
+/* ---------- TOOL ERRORS ---------- */
+const T = [
+  ["T-1", "2.2 and 2.9 (code also in 2.4, 2.5, 2.8, 2.12)", "False positive", "WARN in a v2 run under dash", "2.2 and 2.9 are met in v2", "The script uses bash syntax ([[ ]]) but its docs run it with sh. Where sh is dash (Ubuntu, Debian), those branches never match. Reproduced in evidence/" + DASHRUN + "."],
+  ["T-2", "5.15 restart policy", "False negative", "PASS in v1", "restart: always does not comply", "The check only fires when MaximumRetryCount > 5. always has the value 0, so it passes."],
+  ["T-3", "5.3 SELinux", "Wrong both ways", "WARN in v1, PASS in v2", "SELinux isn't used on this host (the LSM is AppArmor), so the check doesn't apply to either version", "The check only tests whether SecurityOpt is empty. Empty in v1 gives a false WARN; in v2 no-new-privileges fills it, which is a formal pass only."],
+];
+$("#terr").innerHTML = T.map(([id, chk, kind, said, real, why]) => `<div class="sheet tcard"><div class="hd"><h3><span class="mono" style="font-size:.9rem">${id}</span> · ${chk}</h3><span class="chip ${kind.startsWith("False") ? "s-open" : "s-accepted"}">${kind}</span></div>
+  <div class="vs"><div><span class="k">Tool said</span>${said}</div><div><span class="k">Reality</span>${real}</div></div><p class="why">${why}</p></div>`).join("");
+
+/* ---------- EVIDENCE ---------- */
+const P = [
+  ["Meta", "Host name, kernel and OS release, docker version and info, Trivy version, and the docker-bench git commit. This is how the evidence shows which host and which tool versions produced it.", "meta/"],
+  ["Config copies", "daemon.json (if it exists), auditctl -l, the audit rules, the mount layout of /var/lib/docker for the manual 1.1.1 check, the systemd units, file permissions, and copies of compose.yaml, the Dockerfiles and nginx.conf.", "config/"],
+  ["Observation", "docker ps, images with digests, networks, volumes, and docker inspect for containers and networks. Password-like environment values are masked as ***MASKED*** before hashing, so the evidence can be shared.", "docker/"],
+  ["docker-bench", "Runs docker-bench-security with bash by default and saves both the log and the JSON output. DOCKER_BENCH_SHELL=dash runs it under dash instead, which is how T-1 was reproduced.", "docker-bench/"],
+  ["Trivy", "Vulnerability scan of every running image (JSON plus a HIGH/CRITICAL text view) and a config scan of the copied compose and Dockerfiles.", "trivy/"],
+  ["Hash", "sha256sum over every file into SHA256SUMS. Every command and its exit code is in meta/run.log. Analysis happens separately (summarize.py), so the raw output is never edited.", "SHA256SUMS, meta/run.log"],
+];
+P.forEach((p, i) => { const b = el("button", { "aria-pressed": "false" }, `<span class="n">${i + 1} · ${p[2]}</span><span class="t">${p[0]}</span>`); b.onclick = () => showPipe(i); $("#pipe").appendChild(b); });
+function showPipe(i) { [...$("#pipe").children].forEach((b, j) => b.setAttribute("aria-pressed", j === i)); $("#pipeDetail").innerHTML = `<h3>${P[i][0]}</h3><p>${P[i][1]}</p>`; }
+showPipe(0);
+$("#copyCmd").onclick = async () => {
+  try { await navigator.clipboard.writeText($("#verifyCmd").textContent); $("#copyCmd").textContent = "Copied"; }
+  catch { const r = document.createRange(); r.selectNodeContents($("#verifyCmd")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $("#copyCmd").textContent = "Selected"; }
+  setTimeout(() => $("#copyCmd").textContent = "Copy", 1600);
+};
+
+/* ---------- REMAINING ---------- */
+const A = [["A-1", "Weekly Trivy scan and rebuild in CI to keep CIS 4.4 met. With digest pinning, vulnerabilities pile up again without it", "High"], ["A-2", "Remote log collection (journald → central syslog) to fully meet 2.13", "Low"], ["A-3", "Move the proxy to a newer upstream base digest once a fixed image is published, replacing the build-time apk upgrade", "Low"]];
+const PR = { High: "r-Magas", Medium: "r-Közepes", Low: "r-Alacsony" };
+$("#newActions").innerHTML = A.map(([id, t, p]) => `<div class="li"><span class="id">${id}</span><span>${t}</span><span class="chip ${PR[p]}">${p}</span></div>`).join("");
+
+/* ---------- REPO ---------- */
+const R = [
+  ["app/", "Flask booking app", "A minimal CRUD app: list slots, book one (name, e-mail, time), and a basic-auth admin view. Identical in v1 and v2. It reads secrets from <code>NAME_FILE</code> first and falls back to the <code>NAME</code> environment variable, which is how the same code runs in both setups."],
+  ["infra/README.md", "spec", "The spec handed to the sysadmin role: architecture, what v1 should look like (Docker defaults, nothing broken on purpose), and the indicative v2 hardening list."],
+  ["infra/v1/", "defaults", "compose.yaml, Dockerfile and nginx.conf for the baseline. Frozen until the v1 measurement and interim report were done."],
+  ["infra/v2/", "hardened", "compose.yaml with the shared hardening anchor, three Dockerfiles (app, db, proxy), nginx.conf with security headers, and <code>host/</code> holding daemon.json and the auditd rules."],
+  ["scripts/setup-host.sh", "phase 2", "Installs Docker, Trivy, docker-bench-security (pinned), auditd and AppArmor. Works on Ubuntu (apt) and Manjaro/Arch (pacman)."],
+  ["scripts/enable-apparmor-grub.sh", "phase 2", "Adds apparmor to the kernel's lsm= boot parameter, backs up /etc/default/grub first, and regenerates the GRUB config. Needs a reboot."],
+  ["scripts/collect-evidence.sh", "phases 3, 6", "The evidence collector: <code>sudo ./scripts/collect-evidence.sh &lt;label&gt; &lt;compose dir&gt;</code>. One timestamped folder per run, secrets masked, everything hashed."],
+  ["scripts/deploy-v2.sh", "phase 5", "Stops v1, installs host hardening, builds and starts v2 under /opt/booking. Secrets are generated once and kept in /opt/booking/secrets across redeploys, so they always match the database volume."],
+  ["scripts/functional-test.sh", "phase 6", "Checks the live v2 stack (HTTP codes, reachable ports, uid, read-only filesystem, env, userns mapping) and saves the result as a hashed evidence folder."],
+  ["scripts/summarize.py", "phase 7", "Summarises one run or compares two: docker-bench counts per chapter and Trivy counts per image."],
+  ["scripts/build-report.js", "phase 7", "Turns docs/jelentes.md into docs/jelentes.docx (A4, styled tables, risk words in color). Needs the docx npm package."],
+  ["scripts/build-slides.js", "phase 7", "Builds docs/prezentacio.pptx (10 slides with speaker notes). Needs pptxgenjs."],
+  ["docs/", "deliverables", "jelentes.md / .docx (the report), prezentacio.pptx (the slides), audit-terv.md (the standalone plan), attekintes.html (this page), and templates for a finding and an interview record."],
+  ["evidence/", "raw output", "Six runs: v1, the final v2 and its functional test, an intermediate v2 run and its functional test, and v2 under dash. Each has SHA256SUMS; the collector runs also have meta/, config/, docker/, docker-bench/ and trivy/."],
+  ["pptk/", "reference", "The course lecture decks (01-12), kept as reference material."],
+];
+R.forEach((r, i) => { const b = el("button", { "aria-pressed": "false" }, `<span>${r[0]}</span><span class="when">${r[1]}</span>`); b.onclick = () => showRepo(i); $("#treeList").appendChild(b); });
+function showRepo(i) { [...$("#treeList").children].forEach((b, j) => b.setAttribute("aria-pressed", j === i)); $("#treeDetail").innerHTML = `<span class="mono" style="font-weight:500">${R[i][0]}</span><p>${R[i][2]}</p>`; }
+showRepo(0);
+
+/* ---------- nav highlight ---------- */
+const links = [...document.querySelectorAll("#navlinks a")];
+const secs = links.map(a => document.querySelector(a.getAttribute("href")));
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); });
+  }, { rootMargin: "-40% 0px -55% 0px" });
+  secs.forEach(s => s && io.observe(s));
+}
+})();
+</script>
+</html>

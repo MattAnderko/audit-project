@@ -1,0 +1,12 @@
+-w /usr/bin/dockerd -p rwxa -k docker
+-w /run/containerd -p rwa -k docker
+-w /var/lib/docker -p rwxa -k docker
+-w /etc/docker -p rwxa -k docker
+-w /lib/systemd/system/docker.service -p rwxa -k docker
+-w /run/containerd/containerd.sock -p rwxa -k docker
+-w /lib/systemd/system/docker.socket -p rwxa -k docker
+-w /etc/default/docker -p rwxa -k docker
+-w /etc/docker/daemon.json -p rwxa -k docker
+-w /usr/bin/containerd -p rwxa -k docker
+-w /usr/bin/containerd-shim-runc-v2 -p rwxa -k docker
+-w /usr/bin/runc -p rwxa -k docker

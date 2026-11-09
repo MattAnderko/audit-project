@@ -1,0 +1,27 @@
+Client:
+ Version:           29.8.2
+ API version:       1.56
+ Go version:        go1.27.1-X:nodwarf5
+ Git commit:        7fc2dff9bc
+ Built:             Thu Oct  1 00:40:10 2026
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server:
+ Engine:
+  Version:          29.8.2
+  API version:      1.56 (minimum version 1.40)
+  Go version:       go1.27.1-X:nodwarf5
+  Git commit:       8af9fe3a36
+  Built:            Thu Oct  1 00:40:10 2026
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          v2.3.1
+  GitCommit:        64b425cf570b3b8dd1d4cc46da7c1fce65c6651a.m
+ runc:
+  Version:          1.4.2
+  GitCommit:        
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0

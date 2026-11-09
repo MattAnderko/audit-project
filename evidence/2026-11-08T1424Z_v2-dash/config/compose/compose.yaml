@@ -1,0 +1,78 @@
+# v2 – javított telepítés az akcióterv alapján (megállapítás-azonosítók: docs/jelentes.md)
+name: booking-v2
+
+x-hardening: &hardening
+  read_only: true                       # M-07  CIS 5.13
+  security_opt:
+    - no-new-privileges:true            # M-08  CIS 5.26
+  cap_drop: [ALL]                       # M-08  CIS 5.4
+  restart: on-failure:5                 # M-11  CIS 5.15
+  pids_limit: 200                       # M-06  CIS 5.29
+  cpu_shares: 512                       # M-06  CIS 5.12
+
+services:
+  proxy:
+    <<: *hardening
+    build:
+      context: .
+      dockerfile: proxy.Dockerfile
+    image: booking-proxy:v2
+    ports:
+      - "127.0.0.1:8080:8080"           # M-05  CIS 5.8, 5.9, 5.14 – egyetlen publikált port, adott interfészen
+    tmpfs: [/tmp]
+    mem_limit: 128m                     # M-06  CIS 5.11
+    networks: [frontend]
+    depends_on:
+      app:
+        condition: service_healthy
+
+  app:
+    <<: *hardening
+    build:
+      context: ../../app
+      dockerfile: ../infra/v2/app.Dockerfile
+    image: booking-app:v2
+    environment:
+      DB_HOST: db
+      DB_NAME: booking
+      DB_USER: booking
+      DB_PASSWORD_FILE: /run/secrets/db_password       # M-03  CIS 4.10 – titok nem env-ben
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+    secrets: [db_password, admin_password]
+    tmpfs: [/tmp]
+    mem_limit: 256m
+    networks: [frontend, backend]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    <<: *hardening
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    image: booking-db:v2
+    environment:
+      POSTGRES_USER: booking
+      POSTGRES_DB: booking
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets: [db_password]
+    volumes:
+      - dbdata:/var/lib/postgresql
+    tmpfs: [/var/run/postgresql, /tmp]
+    mem_limit: 512m
+    networks: [backend]                 # M-05  az adatbázis csak a belső hálózaton érhető el
+
+networks:
+  frontend: {}
+  backend:
+    internal: true                      # nincs kimenő/bejövő forgalom a hoston kívülre
+
+volumes:
+  dbdata:
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  admin_password:
+    file: ./secrets/admin_password.txt

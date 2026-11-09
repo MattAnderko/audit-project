@@ -1,0 +1,4 @@
+REPOSITORY      TAG       DIGEST    IMAGE ID                                                                  CREATED          SIZE
+booking-app     v2        <none>    sha256:3c66c28bb7b4eb813cd7251d7f135675c2affa8b80f58273c472b4c3e605b100   18 minutes ago   83.3MB
+booking-proxy   v2        <none>    sha256:077510766a3449461085287801952d00f4a0a0678c2b28804df4b3c471071f28   19 minutes ago   60.8MB
+booking-db      v2        <none>    sha256:de56fff55e88b7d32099ea06be83157b7ad0c6cf1af4e7b29c293db60eaeae34   2 days ago       304MB
