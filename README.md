@@ -25,6 +25,7 @@ docs/
   attekintes.html            Interaktív áttekintés (böngészőben nyitható)
   audit-terv.md              Audit terv (a jelentés 2. fejezetének alapja)
   templates/
+    NIK_prezentacio_sablon_2025.pptx  ÓE NIK prezentációs sablon (a diák alapja)
     megallapitas-sablon.md   Egy megállapítás (finding) leírása
     interju-jegyzokonyv.md   Interjú jegyzőkönyv a rendszergazdával
 infra/
@@ -48,16 +49,16 @@ pptk/                        Az előadások anyaga (referencia)
 Az audit elkészült (2026-11-08):
 
 - Leadandó dokumentáció: [docs/jelentes.docx](docs/jelentes.docx) (13 oldal; forrás: [docs/jelentes.md](docs/jelentes.md))
-- Prezentáció: [docs/prezentacio.pptx](docs/prezentacio.pptx) (10 dia, előadói jegyzetekkel)
+- Prezentáció: [docs/prezentacio.pptx](docs/prezentacio.pptx) (10 dia az ÓE NIK sablonján, előadói jegyzetekkel)
 - Interaktív áttekintés: [docs/attekintes.html](docs/attekintes.html) (böngészőben megnyitható)
 - Bizonyítékok: `evidence/2026-11-08T1402Z_v1` (v1), `evidence/2026-11-08T1514Z_v2` (v2, elsődleges), `evidence/2026-11-08T1516Z_v2-functional` (v2 funkcionális teszt), `evidence/2026-11-08T1406Z_v2` és `T1409Z_v2-functional` (köztes v2 mérés, értékelésre nem használtuk), `evidence/2026-11-08T1424Z_v2-dash` (a docker-bench dash-hibájának bizonyítéka)
 - Eredmény: docker-bench score 5 → 61, WARN 29 → 4, magas + kritikus CVE 454 → 0
 
-Újragenerálás (a `docx` és a `pptxgenjs` npm csomag kell hozzá):
+Újragenerálás (a `docx` npm csomag és a `python-pptx` kell hozzá). A `jelentes.docx` kézzel szerkesztett, a `build-report.js` felülírná:
 
 ```bash
 NODE_PATH=<node_modules> node scripts/build-report.js
-NODE_PATH=<node_modules> node scripts/build-slides.js [<pptx skill>/scripts/apply_theme.js]
+python3 scripts/build-slides.py
 python3 scripts/summarize.py evidence/2026-11-08T1402Z_v1 evidence/2026-11-08T1514Z_v2
 ```
 
